@@ -49,22 +49,32 @@ resource "databricks_storage_credential" "unity" {
   azure_managed_identity {
     access_connector_id = azurerm_databricks_access_connector.unity.id
   }
-
-  metastore_id = var.metastore_id
 }
 
 
-# Catalog
 resource "databricks_catalog" "main" {
   provider = databricks.workspace_resources
-  name          = "${var.client}_dev_catalog"
-  storage_root  = "abfss://catalog@${var.datalake_name}.dfs.core.windows.net/"
-  isolation_mode = "OPEN"  # Accessible from all workspaces in the metastore
-  comment       = "Development catalog for client"
-  force_destroy = true
+  name     = "${var.client}_dev_catalog"
+  comment  = "Development catalog for client"
+  properties = {
+    managed_location = databricks_external_location.catalog.url
+  }
+
+  depends_on = [
+    databricks_external_location.catalog
+  ]
 }
 
 # External Locations
+
+resource "databricks_external_location" "catalog" {
+  provider        = databricks.workspace_resources
+  name            = "catalog"
+  url             = "abfss://catalog@${var.datalake_name}.dfs.core.windows.net/"
+  credential_name = databricks_storage_credential.unity.name
+  comment         = "External location for catalog root storage"
+}
+
 resource "databricks_external_location" "this" {
   provider        = databricks.workspace_resources
   for_each        = toset(["bronze", "gold"])

@@ -41,7 +41,9 @@ provider "databricks" {
   alias = "workspace_resources"
   host  = module.databricks_workspace.workspace_url
   azure_workspace_resource_id = module.databricks_workspace.workspace_id
+  /*
   azure_client_id            = module.entra_id.client_id
   azure_client_secret        = module.entra_id.client_secret
   azure_tenant_id            = module.entra_id.tenant_id
+  */
 }
