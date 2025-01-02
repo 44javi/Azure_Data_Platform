@@ -19,7 +19,7 @@ client = "Client"
 suffix = "001"
 
 region          = "westus2"
-subscription_id = "9d0072cb-27f9-4f90-b3fd-891e3c5f2dcd"
+subscription_id = "REPLACE_WITH_SUBSCRIPTION_ID"
 
 
 alert_email = "pachecojavier44@gmail.com"

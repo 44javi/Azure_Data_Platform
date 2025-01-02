@@ -23,8 +23,6 @@ module "data_resources" {
   client              = var.client
   suffix              = var.suffix
   default_tags        = local.default_tags
-  #bronze_container        = var.bronze_container
-  #gold_container          = var.gold_container
 
   depends_on = [module.network]
 }

@@ -1,12 +1,50 @@
 # Terraform_Azure_Data_Platform
 Modular Terraform repository for Azure infrastructure.
 
-Pre-requisites
-Create Azure management group
-Subscriptions
-Assign Storage Blob Data Contributor to admins
-Databricks CLI - https://docs.databricks.com/en/dev-tools/cli/install.html
-Terraform - https://developer.hashicorp.com/terraform/install
+## Project Structure
+```
+/azure-terraform
+├── /environments                  # Environment configurations
+│   └── backend_dev.hcl            # Backend configuration for dev environment
+├── /modules                       
+│   ├── /data_resources           # Module for storage related resources
+│   │   ├── main.tf               
+│   │   ├── variables.tf          
+│   │   └── outputs.tf
+│   ├── /entra_id                 # Module for Entra ID resources
+│   │   ├── main.tf               # Service principals, app registrations, groups
+│   │   ├── variables.tf          
+│   │   └── outputs.tf
+│   ├── /inactive_resources       # Module for resources currently not in use
+│   │   ├── main.tf              
+│   ├── /monitoring               # Module for monitoring and logging resources
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── /network                  # Module for networking components
+│   │   ├── main.tf               # VNets, public/private subnets, NSGs, etc
+│   │   ├── variables.tf          
+│   │   └── outputs.tf
+│   └── /unity_catalog           # Module for Unity Catalog resources
+│       ├── main.tf               # Catalogs, schemas, and external locations
+│       ├── variables.tf
+│       └── outputs.tf
+├── module_blocks.tf              # Core configuration to orchestrate modules
+├── provider.tf                   # Azure providers
+├── variables.tf                  # Variables for the project
+├── variables.auto.tfvars         # Default values for variables
+├── management_resources.tf       # For resources that apply to all modules
+├── outputs.tf                    # Root module outputs
+└── README.md                     # Project documentation
+ 
+```
+
+## Pre-requisites
+- Create Azure management group
+- Subscriptions
+- Assign Storage Blob Data Contributor to admins
+- Databricks CLI - https://docs.databricks.com/en/dev-tools/cli/install.html
+- Terraform - https://developer.hashicorp.com/terraform/install
 
 ## Deployment Steps
 1. Initial Deployment
@@ -34,7 +72,7 @@ Terraform - https://developer.hashicorp.com/terraform/install
 |------|---------|
 | <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) | ~> 3.0 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 4.9 |
-| <a name="requirement_databricks"></a> [databricks](#requirement\_databricks) | 1.5.0 |
+| <a name="requirement_databricks"></a> [databricks](#requirement\_databricks) | ~> 1.6 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.6.3 |
 
 ## Providers
