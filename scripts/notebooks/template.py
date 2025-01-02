@@ -8,7 +8,7 @@ CONFIG = {
     'bronze_schema': 'bronze_container_schema',
     'gold_schema': 'gold_container_schema',
     'storage_account': 'datalake account name',
-    'bronze_path': 'abfss://bronze@{storage_account}.dfs.core.windows.net/vitalsigns/date=*/hour=*/*.gz',
+    'bronze_path': 'abfss://bronze@{storage_account}.dfs.core.windows.net/vitals/date=*/hour=*/*.gz',
     'gold_path': 'abfss://gold@{storage_account}.dfs.core.windows.net/output'
 }
 
