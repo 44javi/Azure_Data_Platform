@@ -1,5 +1,5 @@
-# Terraform_Azure_Data_Platform
-Modular Terraform repository for Azure infrastructure.
+# Azure_Data_Platform
+A repository for automating Azure and Databricks deployment with Terraform.
 
 ## Project Structure
 ```
