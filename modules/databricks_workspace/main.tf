@@ -1,21 +1,6 @@
 # /modules/databricks_workspace/main.tf
-/*
-terraform {
-  required_providers {
-    databricks = {
-      source = "databricks/databricks"
-      version = "1.5.0"
-      configuration_aliases = [databricks.create_workspace]
-    }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.9"
-    }
-  }
-}
-*/
 
-# Create Azure Databricks Workspace with VNet injection
+# Azure Databricks Workspace with VNet injection
 resource "azurerm_databricks_workspace" "this" {
   name                        = "${var.client}_databricks_workspace_${var.suffix}"
   resource_group_name         = var.resource_group_name

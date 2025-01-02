@@ -4,7 +4,7 @@ terraform {
   required_providers {
     databricks = {
       source                = "databricks/databricks"
-      version               = "~> 1.6.0"
+      version               = "~> 1.6"
       configuration_aliases = [databricks.workspace_resources]
     }
     azurerm = {
@@ -51,22 +51,19 @@ resource "databricks_storage_credential" "unity" {
   }
 }
 
-
+# Catalog
 resource "databricks_catalog" "main" {
-  provider = databricks.workspace_resources
-  name     = "${var.client}_dev_catalog"
-  comment  = "Development catalog for client"
+  provider      = databricks.workspace_resources
+  name          = "${var.client}_dev_catalog"
+  comment       = "Development catalog for client"
+  storage_root = databricks_external_location.catalog.url # Ignore the error here. It is correct.
+  
   properties = {
-    managed_location = databricks_external_location.catalog.url
+    purpose = "Development"
   }
-
-  depends_on = [
-    databricks_external_location.catalog
-  ]
 }
 
 # External Locations
-
 resource "databricks_external_location" "catalog" {
   provider        = databricks.workspace_resources
   name            = "catalog"
@@ -82,12 +79,11 @@ resource "databricks_external_location" "this" {
   url             = "abfss://${each.key}@${var.datalake_name}.dfs.core.windows.net/"
   credential_name = databricks_storage_credential.unity.name
   comment         = "External location for ${each.key} container"
-  metastore_id    = var.metastore_id
 }
 
 # Schemas
 resource "databricks_schema" "schemas" {
-  provider        = databricks.workspace_resources
+  provider     = databricks.workspace_resources
   for_each     = toset(["bronze_container_schema", "gold_container_schema"])
   catalog_name = databricks_catalog.main.name
   name         = each.key

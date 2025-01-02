@@ -2,10 +2,29 @@
 Modular Terraform repository for Azure infrastructure.
 
 Pre-requisites
-Create management group
+Create Azure management group
 Subscriptions
-Assign Storage Blob Data Contributor 
+Assign Storage Blob Data Contributor to admins
 Databricks CLI - https://docs.databricks.com/en/dev-tools/cli/install.html
+Terraform - https://developer.hashicorp.com/terraform/install
+
+## Deployment Steps
+1. Initial Deployment
+   - Run `terraform init` 
+   - Execute `terraform plan` 
+   - Run `terraform apply` to deploy the initial infrastructure
+   
+2. Databricks Configuration
+   - After the Databricks workspace is created, navigate to the workspace in the Azure portal
+   - Generate a personal access token (User Settings → Developer → New Token)
+   - Configure the Databricks CLI:
+     ```bash
+     databricks configure --token
+     ```
+   - Enter the workspace URL and access token when prompted
+   - This creates a `~/.databrickscfg` file that enables authentication and resource creation
+3. Final Deployment
+   - Run `terraform apply` again to complete the deployment of Unity Catalog resources
 
 
 <!-- BEGIN_TF_DOCS -->
@@ -42,11 +61,11 @@ Databricks CLI - https://docs.databricks.com/en/dev-tools/cli/install.html
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_alert_email"></a> [alert\_email](#input\_alert\_email) | Email used for monitoring alerts | `string` | n/a | yes |
-| <a name="input_bronze_container"></a> [bronze\_container](#input\_bronze\_container) | Container for Raw/ingested data | `string` | n/a | yes |
+| <a name="input_bronze_container"></a> [bronze\_container](#input\_bronze\_container) | Container for raw/ingested data | `string` | n/a | yes |
 | <a name="input_client"></a> [client](#input\_client) | Client name for resource naming. | `string` | n/a | yes |
 | <a name="input_created_by"></a> [created\_by](#input\_created\_by) | Tag showing Terraform created this resource | `string` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment for the resources (e.g., dev, prod). | `string` | n/a | yes |
-| <a name="input_gold_container"></a> [gold\_container](#input\_gold\_container) | Container for Processed/refined data | `string` | n/a | yes |
+| <a name="input_gold_container"></a> [gold\_container](#input\_gold\_container) | Container for processed/refined data | `string` | n/a | yes |
 | <a name="input_owner"></a> [owner](#input\_owner) | Person responsible for the resource | `string` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | Main project associated with this deployment | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Region where resources will be created | `string` | n/a | yes |
