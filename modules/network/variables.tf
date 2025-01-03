@@ -20,6 +20,11 @@ variable "subnet_address_prefixes" {
   type        = map(string)
 }
 
+variable "trusted_ip_ranges" {
+  description = "List of trusted IP ranges for access to public VMs"
+  type        = list(string)
+}
+
 variable "region" {
   description = "Region where resources will be created"
   type = string

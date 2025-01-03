@@ -61,6 +61,8 @@ resource "databricks_catalog" "main" {
   properties = {
     purpose = "Development"
   }
+
+  depends_on = [ databricks_external_location.catalog ]
 }
 
 # External Locations

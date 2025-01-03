@@ -14,12 +14,14 @@ use_azuread_auth    = true
 
 #.tfvars
 
+subscription_id = "REPLACE_WITH_SUBSCRIPTION_ID"
+
 # Resource Naming
 client = "Client"
 suffix = "001"
 
 region          = "westus2"
-subscription_id = "REPLACE_WITH_SUBSCRIPTION_ID"
+secondary_region   = "eastus2"
 
 
 alert_email = "pachecojavier44@gmail.com"

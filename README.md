@@ -6,8 +6,8 @@ A repository for automating Azure and Databricks deployment with Terraform.
 
 ```
 /azure-terraform
-├── /environments                  # Environment configurations
-│   └── backend_dev.hcl            # Backend configuration for dev environment
+├── /environments                 # Environment configurations
+│   └── backend_dev.hcl           # Backend configuration for dev environment
 ├── /modules
 │   ├── /data_resources           # Module for storage related resources
 │   │   ├── main.tf
@@ -27,7 +27,7 @@ A repository for automating Azure and Databricks deployment with Terraform.
 │   │   ├── main.tf               # VNets, public/private subnets, NSGs, etc
 │   │   ├── variables.tf
 │   │   └── outputs.tf
-│   └── /unity_catalog           # Module for Unity Catalog resources
+│   └── /unity_catalog            # Module for Unity Catalog resources
 │       ├── main.tf               # Catalogs, schemas, and external locations
 │       ├── variables.tf
 │       └── outputs.tf
@@ -67,5 +67,3 @@ A repository for automating Azure and Databricks deployment with Terraform.
    - This creates a `~/.databrickscfg` file that enables authentication and resource creation
 3. Final Deployment
    - Run `terraform apply` again to complete the deployment of resources
-
-

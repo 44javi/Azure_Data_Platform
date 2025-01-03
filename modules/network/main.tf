@@ -19,8 +19,81 @@ resource "azurerm_subnet" "private" {
   name                            = "${var.client}_private_subnet_${var.suffix}"
   resource_group_name             = var.resource_group_name
   virtual_network_name            = azurerm_virtual_network.vnet.name
-  address_prefixes                = [var.subnet_address_prefixes["vm_subnet"]]
+  address_prefixes                = [var.subnet_address_prefixes["private_subnet"]]
   default_outbound_access_enabled = false # Disable default outbound internet access
+}
+
+# Creates the public subnet
+resource "azurerm_subnet" "public" {
+  name                            = "${var.client}_public_subnet_${var.suffix}"
+  resource_group_name             = var.resource_group_name
+  virtual_network_name            = azurerm_virtual_network.vnet.name
+  address_prefixes                = [var.subnet_address_prefixes["public_subnet"]]
+  default_outbound_access_enabled = false # Disable default outbound internet access
+}
+
+# NSG for public subnet
+resource "azurerm_network_security_group" "public" {
+  name                = "${var.client}_public_nsg_${var.suffix}"
+  location            = var.region
+  resource_group_name = var.resource_group_name
+
+  tags = var.default_tags
+
+  security_rule {
+    name                       = "Allow-SSH"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefixes    = var.trusted_ip_ranges
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-11091"
+    priority                   = 1002
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "11091"
+    source_address_prefixes    = var.trusted_ip_ranges
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-Kafka-Access"
+    priority                   = 1003
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "9021"
+    source_address_prefixes    = var.trusted_ip_ranges
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-Receiver"
+    priority                   = 1004
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "9080"
+    source_address_prefixes    = var.trusted_ip_ranges
+    destination_address_prefix = "*"
+  }
+}
+
+
+# Associate public NSG with public subnet
+resource "azurerm_subnet_network_security_group_association" "public" {
+  subnet_id                 = azurerm_subnet.public.id
+  network_security_group_id = azurerm_network_security_group.public.id
 }
 
 
@@ -50,22 +123,39 @@ resource "azurerm_nat_gateway_public_ip_association" "this" {
   public_ip_address_id = azurerm_public_ip.nat_gateway.id
 }
 
-# Associate NAT Gateway with the VM Subnet
+# Associate NAT Gateway with the public subnet
+resource "azurerm_subnet_nat_gateway_association" "public" {
+subnet_id  	= azurerm_subnet.public.id
+nat_gateway_id = azurerm_nat_gateway.this.id
+
+depends_on = [
+   azurerm_nat_gateway.this,
+   azurerm_subnet.public
+]
+}
+
+# Associate NAT Gateway with the private Subnet
 resource "azurerm_subnet_nat_gateway_association" "nat_gateway_subnet_assoc" {
   subnet_id      = azurerm_subnet.private.id
   nat_gateway_id = azurerm_nat_gateway.this.id
+
+  depends_on = [
+   azurerm_nat_gateway.this,
+   azurerm_subnet.private
+]
 }
 
 # Creates the the subnet for Azure Bastion
 resource "azurerm_subnet" "bastion" {
-  name                 = "${var.client}_bastion_subnet_${var.suffix}"# "AzureBastionSubnet"
+  name                 = "${var.client}_bastion_subnet_${var.suffix}" 
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = [var.subnet_address_prefixes["bastion_subnet"]] 
+  address_prefixes     = [var.subnet_address_prefixes["bastion_subnet"]]
 }
 
-resource "azurerm_network_security_group" "nsg" {
-  name                = "${var.client}_nsg_${var.suffix}"
+# Network Security group for private subnet
+resource "azurerm_network_security_group" "private" {
+  name                = "${var.client}_private_nsg_${var.suffix}"
   location            = var.region
   resource_group_name = var.resource_group_name
 
@@ -94,7 +184,7 @@ resource "azurerm_network_security_group" "nsg" {
     destination_address_prefix = "*"
   }
   security_rule {
-    name                       = "Allow-NKICU"
+    name                       = "Allow-Viewer"
     priority                   = 1003
     direction                  = "Inbound"
     access                     = "Allow"
@@ -105,7 +195,7 @@ resource "azurerm_network_security_group" "nsg" {
     destination_address_prefix = "*"
   }
   security_rule {
-    name                       = "Allow-NKICU-2"
+    name                       = "Allow-Viewer-2"
     priority                   = 1004
     direction                  = "Inbound"
     access                     = "Allow"
@@ -118,7 +208,7 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 # Link the NSG with the VM Subnet
-resource "azurerm_subnet_network_security_group_association" "nsg_assoc" {
+resource "azurerm_subnet_network_security_group_association" "private" {
   subnet_id                 = azurerm_subnet.private.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
+  network_security_group_id = azurerm_network_security_group.private.id
 }

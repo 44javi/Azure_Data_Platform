@@ -18,7 +18,7 @@ variable "region" {
 variable "secondary_region" {
   description = "2nd region for resource creation"
   type        = string
-  
+
 }
 
 variable "vnet_address_space" {
@@ -30,6 +30,11 @@ variable "vnet_address_space" {
 variable "subnet_address_prefixes" {
   description = "A map of address prefixes for each subnet"
   type        = map(string)
+}
+
+variable "trusted_ip_ranges" {
+  description = "List of trusted IP ranges for access to public VMs"
+  type = list(string)
 }
 
 variable "alert_email" {

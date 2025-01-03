@@ -271,7 +271,6 @@ resource "azurerm_virtual_network_gateway_connection" "vpn_connection" {
 /*
 
 
-# Only needed if creating Databrick workspace resources like notebooks or clusters through terraform
 
 
 /*
@@ -356,9 +355,6 @@ resource "databricks_notebook" "gzip_to_parquet" {
 }
 
 
-
-# Compute and scheduling to be handled by Data Factory 
-leaving it here in case that wants to be changed in the future
 
 # Databricks Job using a Job Cluster
 resource "databricks_job" "gzip_to_parquet_job" {
