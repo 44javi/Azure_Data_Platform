@@ -44,8 +44,7 @@ A repository for automating Azure and Databricks deployment with Terraform.
 ## Pre-requisites
 
 - Create Azure management group
-- Subscriptions
-- Assign Storage Blob Data Contributor to admins
+- Set Subscriptions
 - Azure CLI - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
 - Databricks CLI - https://docs.databricks.com/en/dev-tools/cli/install.html
 - Terraform - https://developer.hashicorp.com/terraform/install

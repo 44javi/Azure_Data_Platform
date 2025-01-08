@@ -31,7 +31,7 @@ module "data_resources" {
 module "databricks_workspace" {
   source = "./modules/databricks_workspace"
   #providers = {
-  #   databricks = databricks.create_workspace
+  #   databricks.create_workspace = databricks.create_workspace
   # }
   client                  = var.client
   resource_group_name     = azurerm_resource_group.main.name
