@@ -10,7 +10,7 @@ use_azuread_auth    = true
 # terraform init -backend-config=environments/backend_dev.hcl
 
 
-
+------------------------------------------------------------------------------------------------------------------------
 
 #.tfvars
 
@@ -24,16 +24,22 @@ region          = "westus2"
 secondary_region   = "eastus2"
 
 
-alert_email = "pachecojavier44@gmail.com"
+alert_email = "@protonmail.com"
 
 vnet_address_space = ["10.44.0.0/16"]
 
 subnet_address_prefixes = {
-  vm_subnet                 = "10.44.1.0/26" # Private subnet for VMs
+  public_subnet             = "10.44.0.0/26" # Public subnet for VMs
+  private_subnet            = "10.44.1.0/26" # Private subnet for VMs
   bastion_subnet            = "10.44.2.0/26" # Subnet for Azure Bastion
   databricks_public_subnet  = "10.44.3.0/24" # Public subnet for Databricks
   databricks_private_subnet = "10.44.4.0/24" # Private subnet for Databricks
 }
+
+# Access to public VMs
+trusted_ip_ranges = [
+  ""
+]
 
 bronze_container = "bronze"
 gold_container   = "gold"

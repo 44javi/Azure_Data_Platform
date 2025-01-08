@@ -56,7 +56,7 @@ resource "databricks_catalog" "main" {
   provider      = databricks.workspace_resources
   name          = "${var.client}_dev_catalog"
   comment       = "Development catalog for client"
-  storage_root = databricks_external_location.catalog.url # Ignore the error here. It is correct.
+  storage_root = databricks_external_location.catalog.url 
   
   properties = {
     purpose = "Development"

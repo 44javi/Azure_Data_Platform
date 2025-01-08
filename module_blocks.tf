@@ -50,11 +50,13 @@ module "databricks_workspace" {
 }
 
 module "entra_id" {
-  source       = "./modules/entra_id"
-  client       = var.client
-  suffix       = var.suffix
-  workspace_id = module.databricks_workspace.workspace_id
-  datalake_id  = module.data_resources.datalake_id
+  source        = "./modules/entra_id"
+  client        = var.client
+  suffix        = var.suffix
+  workspace_id  = module.databricks_workspace.workspace_id
+  datalake_id   = module.data_resources.datalake_id
+  workspace_url = module.databricks_workspace.workspace_url
+  account_id    = var.account_id
 
   depends_on = [
     module.databricks_workspace,

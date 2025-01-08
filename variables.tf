@@ -81,3 +81,9 @@ variable "metastore_id" {
   description = "ID of the default Databricks metastore"
   type        = string
 }
+
+variable "account_id" {
+  description = "Databricks account ID"
+  type        = string
+}
+
