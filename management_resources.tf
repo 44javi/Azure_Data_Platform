@@ -9,7 +9,7 @@ resource "azurerm_resource_group" "main" {
 }
 # Creates a Key Vault for secret management
 resource "azurerm_key_vault" "this" {
-  name                       = "${var.client}keyvault${var.suffix}"
+  name                       = "${var.client}_keyvault_${var.suffix}"
   resource_group_name        = azurerm_resource_group.main.name
   location                   = var.region
   tenant_id                  = data.azurerm_client_config.current.tenant_id

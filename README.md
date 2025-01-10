@@ -13,6 +13,10 @@ A repository for automating Azure and Databricks deployment with Terraform.
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   └── outputs.tf
+│   ├── /databricks_workspace     # Module for Databricks workspace with VNET injection
+│   │   ├── main.tf               # Workspace, subnets, NSGs, and NAT gateway
+│   │   ├── variables.tf
+│   │   └── outputs.tf
 │   ├── /entra_id                 # Module for Entra ID resources
 │   │   ├── main.tf               # Service principals, app registrations, groups
 │   │   ├── variables.tf
