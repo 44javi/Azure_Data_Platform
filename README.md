@@ -1,14 +1,32 @@
 # Azure_Data_Platform
 
-A repository for automating Azure and Databricks deployment with Terraform.
+# Azure Data Platform 🚀
 
+A repository for automating **Azure** and **Databricks** deployments with **Terraform**.
+
+---
+
+## 📚 Table of Contents
+
+- [Diagrams](#diagrams)
+- [Project Structure](#project-structure)
+- [Pre-requisites](#pre-requisites)
+
+---
+
+## 📊 Diagrams
+
+### Azure Architecture
 ![Azure Diagram](assets/Azure_architecture.png)
-> ⚠️ **Note:** This diagram is a high-level overview and doesn't capture all deployed resources
 
+### Databricks Architecture
 ![Databricks Diagram](assets/Databricks_architecture.png)
 
+> ⚠️ **Note:** The diagrams are a **high-level overview** and don't capture **all deployed resources**.
 
-## Project Structure
+---
+
+## 🗂️ Project Structure
 
 ```
 /azure-terraform
