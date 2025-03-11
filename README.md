@@ -13,7 +13,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 
 ---
 
-## 📊 Diagrams
+## Diagrams
 
 ### Azure Architecture
 ![Azure Diagram](assets/Azure_architecture.png)
@@ -25,7 +25,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 /azure-terraform
