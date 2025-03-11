@@ -10,6 +10,13 @@ resource "azuread_group" "data_engineers" {
   description      = "Group for data related access"
 }
 
+# Create External Security Group
+resource "azuread_group" "External_Users" {
+  display_name     = "External_Users"
+  security_enabled = true
+  description      = "Group for guests to have access to Azure resources"
+}
+
 # Assign Databricks Workspace permissions
 resource "azurerm_role_assignment" "data_engineers_workspace" {
   scope                = var.workspace_id

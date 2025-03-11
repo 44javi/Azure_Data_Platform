@@ -2,6 +2,21 @@
 
 data "azurerm_client_config" "current" {}
 
+
+# Define the list of continents (Management Groups)
+variable "continents" {
+  type    = list(string)
+  default = ["NorthAmerica", "Europe", "Asia", "SouthAmerica", "Africa", "Australia"]
+}
+
+# Create Management Groups for each continent
+resource "azurerm_management_group" "continents" {
+  for_each                    = toset(var.continents)
+  display_name                = each.value
+  parent_management_group_id   = var.root_management_group_id
+}
+
+
 # Create a Resource Group
 resource "azurerm_resource_group" "main" {
   name     = "${var.client}_Data_Platform_${var.suffix}"
@@ -9,7 +24,7 @@ resource "azurerm_resource_group" "main" {
 }
 # Creates a Key Vault for secret management
 resource "azurerm_key_vault" "this" {
-  name                       = "${var.client}_keyvault_${var.suffix}"
+  name                       = "${var.client}keyvault${var.suffix}"
   resource_group_name        = azurerm_resource_group.main.name
   location                   = var.region
   tenant_id                  = data.azurerm_client_config.current.tenant_id
