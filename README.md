@@ -6,10 +6,38 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 
 ## Table of Contents
 
-- [Diagrams](#diagrams)
-- [Project Structure](#project-structure)
 - [Pre-requisites](#pre-requisites)
 - [Deployment Steps](#deployment-steps)
+- [Diagrams](#diagrams)
+- [Project Structure](#project-structure)
+
+---
+
+## Pre-requisites
+
+- Create Azure management group
+- Set Subscriptions
+- Azure CLI - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
+- Databricks CLI - https://docs.databricks.com/en/dev-tools/cli/install.html
+- Terraform - https://developer.hashicorp.com/terraform/install
+
+## Deployment Steps
+
+1. Initial Deployment
+   - `terraform init`
+   - `terraform plan`
+   - `terraform apply` to deploy the initial infrastructure
+2. Databricks Configuration
+   - After the Databricks workspace is created, navigate to the workspace in the Azure portal
+   - Generate a personal access token (User Settings → Developer → New Token)
+   - Configure the Databricks CLI:
+     ```bash
+     databricks configure --token
+     ```
+   - Enter the workspace URL and access token when prompted
+   - This creates a `~/.databrickscfg` file that enables authentication and resource creation
+3. Final Deployment
+   - Run `terraform apply` again to complete the deployment of resources
 
 ---
 
@@ -67,29 +95,3 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 └── README.md                     # Project documentation
 
 ```
-
-## Pre-requisites
-
-- Create Azure management group
-- Set Subscriptions
-- Azure CLI - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
-- Databricks CLI - https://docs.databricks.com/en/dev-tools/cli/install.html
-- Terraform - https://developer.hashicorp.com/terraform/install
-
-## Deployment Steps
-
-1. Initial Deployment
-   - `terraform init`
-   - `terraform plan`
-   - `terraform apply` to deploy the initial infrastructure
-2. Databricks Configuration
-   - After the Databricks workspace is created, navigate to the workspace in the Azure portal
-   - Generate a personal access token (User Settings → Developer → New Token)
-   - Configure the Databricks CLI:
-     ```bash
-     databricks configure --token
-     ```
-   - Enter the workspace URL and access token when prompted
-   - This creates a `~/.databrickscfg` file that enables authentication and resource creation
-3. Final Deployment
-   - Run `terraform apply` again to complete the deployment of resources
