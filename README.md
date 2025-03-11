@@ -1,5 +1,3 @@
-# Azure_Data_Platform
-
 # Azure Data Platform 🚀
 
 A repository for automating **Azure** and **Databricks** deployments with **Terraform**.
