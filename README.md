@@ -3,6 +3,10 @@
 A repository for automating Azure and Databricks deployment with Terraform.
 
 ![Azure Diagram](assets/Azure_architecture.png)
+> ⚠️ **Note:** This diagram is a high-level overview and doesn't capture all deployed resources
+
+![Databricks Diagram](assets/Databricks_architecture.png)
+
 
 ## Project Structure
 
