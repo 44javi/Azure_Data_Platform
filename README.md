@@ -6,8 +6,8 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 
 ## 📚 Table of Contents
 
-- [Diagrams](#-diagrams)
-- <h2 id="project-structure">🗂️ Project Structure</h2>
+- [Diagrams](diagrams)
+- [Project Structure](#project-structure)
 - [Pre-requisites](#pre-requisites)
 - [Deployment Steps](#deployment-steps)
 
