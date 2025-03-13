@@ -13,8 +13,8 @@ module "network" {
   default_tags            = local.default_tags
 }
 
-module "data_resources" {
-  source              = "./modules/data_resources"
+module "storage" {
+  source              = "./modules/storage"
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
   region              = var.region
@@ -29,10 +29,7 @@ module "data_resources" {
 }
 
 module "databricks_workspace" {
-  source = "./modules/databricks_workspace"
-  #providers = {
-  #   databricks.create_workspace = databricks.create_workspace
-  # }
+  source                  = "./modules/databricks_workspace"
   client                  = var.client
   resource_group_name     = azurerm_resource_group.main.name
   region                  = var.region
@@ -46,21 +43,25 @@ module "databricks_workspace" {
   nat_gateway_id          = module.network.nat_gateway_id
 
 
-  depends_on = [module.data_resources]
+  depends_on = [module.storage]
 }
 
-module "entra_id" {
-  source        = "./modules/entra_id"
-  client        = var.client
-  suffix        = var.suffix
-  workspace_id  = module.databricks_workspace.workspace_id
-  datalake_id   = module.data_resources.datalake_id
-  workspace_url = module.databricks_workspace.workspace_url
-  account_id    = var.account_id
+module "security" {
+  source              = "./modules/security"
+  client              = var.client
+  suffix              = var.suffix
+  region              = var.region
+  resource_group_name = azurerm_resource_group.main.name
+  resource_group_id   = azurerm_resource_group.main.id
+  default_tags        = local.default_tags
+  workspace_id        = module.databricks_workspace.workspace_id
+  datalake_id         = module.storage.datalake_id
+  workspace_url       = module.databricks_workspace.workspace_url
+  account_id          = var.account_id
 
   depends_on = [
     module.databricks_workspace,
-    module.data_resources
+    module.storage
   ]
 }
 
@@ -76,14 +77,14 @@ module "unity_catalog" {
   resource_group_id   = azurerm_resource_group.main.id
   region              = var.region
   secondary_region    = var.secondary_region
-  datalake_name       = module.data_resources.datalake_name
-  datalake_id         = module.data_resources.datalake_id
+  datalake_name       = module.storage.datalake_name
+  datalake_id         = module.storage.datalake_id
   workspace_id        = module.databricks_workspace.workspace_id
   metastore_id        = var.metastore_id
 
   depends_on = [
-    module.entra_id,
-    module.data_resources,
+    module.security,
+    module.storage,
     module.databricks_workspace
   ]
 }

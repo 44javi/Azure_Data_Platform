@@ -6,7 +6,7 @@ resource "azurerm_databricks_workspace" "this" {
   resource_group_name         = var.resource_group_name
   location                    = var.region
   sku                         = "premium" # Chose premium for job clusters and private endpoint, Role-Based Access Control (RBAC), Audit Logs, and Cluster Policies.
-  managed_resource_group_name = "${var.client}_databricks_rg_${var.suffix}" # Databricks creates a mandatory managed RG
+  managed_resource_group_name = "${var.client}_clusters_rg_${var.suffix}" # Databricks creates a mandatory managed RG
 
   tags = var.default_tags
 

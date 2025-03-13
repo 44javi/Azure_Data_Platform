@@ -49,7 +49,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 ### Databricks Architecture
 ![Databricks Diagram](assets/Databricks_architecture.png)
 
-> ⚠️ **Note:** The diagrams are a **high-level overview** and don't capture the **all deployed resources**.
+> ⚠️ **Note:** The diagrams are a **high level overview** and don't capture the **all deployed resources**.
 
 ---
 
