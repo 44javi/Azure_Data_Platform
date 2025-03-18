@@ -62,7 +62,7 @@ variable "dbx_logs" {
   default     = []
 }
 
-variable "log_analytics_workspace_id" {
+variable "log_analytics_id" {
   description = "ID of the Log Analytics workspace"
   type        = string
 }

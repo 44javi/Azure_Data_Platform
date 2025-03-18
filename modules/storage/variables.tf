@@ -45,6 +45,17 @@ variable "vnet_name" {
   type        = string
 }
 
+variable "log_analytics_id" {
+  description = "ID of the Log Analytics workspace"
+  type        = string
+}
+
+variable "adls_logs"{
+  description = "List of Data Lake logs to enable"
+  type = list(string)
+  default = []
+}
+
 /*
 variable "bronze_container" {
   description = "Name of the container for raw data"

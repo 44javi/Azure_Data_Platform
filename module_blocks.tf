@@ -24,6 +24,8 @@ module "storage" {
   client              = var.client
   suffix              = var.suffix
   default_tags        = local.default_tags
+  log_analytics_id    = module.monitoring.log_analytics_id
+  adls_logs           = var.adls_logs
 
   depends_on = [module.network]
 }
@@ -40,21 +42,20 @@ module "monitoring" {
 }
 
 module "databricks_workspace" {
-  source                     = "./modules/databricks_workspace"
-  client                     = var.client
-  resource_group_name        = azurerm_resource_group.main.name
-  region                     = var.region
-  suffix                     = var.suffix
-  default_tags               = local.default_tags
-  subnet_address_prefixes    = var.subnet_address_prefixes
-  vnet_id                    = module.network.vnet_id
-  vnet_name                  = module.network.vnet_name
-  subnet_id                  = module.network.subnet_id
-  public_ip_id               = module.network.public_ip_id
-  nat_gateway_id             = module.network.nat_gateway_id
-  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
-  dbx_logs                   = var.dbx_logs
-
+  source                  = "./modules/databricks_workspace"
+  client                  = var.client
+  resource_group_name     = azurerm_resource_group.main.name
+  region                  = var.region
+  suffix                  = var.suffix
+  default_tags            = local.default_tags
+  subnet_address_prefixes = var.subnet_address_prefixes
+  vnet_id                 = module.network.vnet_id
+  vnet_name               = module.network.vnet_name
+  subnet_id               = module.network.subnet_id
+  public_ip_id            = module.network.public_ip_id
+  nat_gateway_id          = module.network.nat_gateway_id
+  log_analytics_id        = module.monitoring.log_analytics_id
+  dbx_logs                = var.dbx_logs
 
   depends_on = [
     module.storage,

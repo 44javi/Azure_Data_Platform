@@ -73,6 +73,24 @@ resource "azurerm_private_endpoint" "adls" {
   }
 }
 
+resource "azurerm_monitor_diagnostic_setting" "adls" {
+  name                       = "${var.client}_adls_logs_${var.suffix}"
+  target_resource_id         = "${azurerm_storage_account.adls.id}/blobServices/default"
+  log_analytics_workspace_id = var.log_analytics_id
+
+   dynamic "enabled_log" {
+    for_each = var.adls_logs
+    content {
+      category = enabled_log.value
+    }
+  }
+
+  metric {
+    category = "Transaction"
+    enabled  = true
+    
+  }
+}
 
 /*
 

@@ -16,7 +16,7 @@ resource "azurerm_log_analytics_workspace" "this" {
   sku                 = "PerGB2018"   # SKUs: Free, PerGB2018, Standalone, CapacityReservation
   retention_in_days   = 30            # Retention period for logs (30-730 days)
 
-  daily_quota_gb             = 5 # -1 for unlimited
+  daily_quota_gb             = 1 # -1 for unlimited
   internet_ingestion_enabled = true
   internet_query_enabled     = true
 

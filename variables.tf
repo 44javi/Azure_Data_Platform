@@ -93,7 +93,13 @@ variable "root_management_group_id" {
 }
 
 variable "dbx_logs" {
-  description = "List of Databricks log categories to enable"
+  description = "List of Databricks logs to enable"
   type        = list(string)
   default     = []
+}
+
+variable "adls_logs"{
+  description = "List of Data Lake logs to enable"
+  type = list(string)
+  default = []
 }

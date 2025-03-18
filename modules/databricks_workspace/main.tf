@@ -117,9 +117,9 @@ resource "azurerm_subnet_nat_gateway_association" "databricks_private" {
 
 # Enable logs for Databricks workspace
 resource "azurerm_monitor_diagnostic_setting" "dbx" {
-  name                       = "${var.client}_databricks_diagnostics_${var.suffix}"
+  name                       = "${var.client}_dbx_logs_${var.suffix}"
   target_resource_id         = azurerm_databricks_workspace.this.id
-  log_analytics_workspace_id = var.log_analytics_workspace_id
+  log_analytics_workspace_id = var.log_analytics_id
 
   dynamic "enabled_log" {
     for_each = var.dbx_logs
