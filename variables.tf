@@ -91,3 +91,9 @@ variable "root_management_group_id" {
   description = "The ID of the Root Management Group"
   type        = string
 }
+
+variable "dbx_logs" {
+  description = "List of Databricks log categories to enable"
+  type        = list(string)
+  default     = []
+}

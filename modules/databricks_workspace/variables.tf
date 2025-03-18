@@ -55,3 +55,14 @@ variable "public_ip_id" {
   description = "id of gateway public ip"
   type        = string
 }
+
+variable "dbx_logs" {
+  description = "List of Databricks log categories to enable"
+  type        = list(string)
+  default     = []
+}
+
+variable "log_analytics_workspace_id" {
+  description = "ID of the Log Analytics workspace"
+  type        = string
+}

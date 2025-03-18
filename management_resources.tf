@@ -6,7 +6,7 @@ data "azurerm_client_config" "current" {}
 # Define the list of continents (Management Groups)
 variable "continents" {
   type    = list(string)
-  default = ["NorthAmerica", "Europe", "Asia", "SouthAmerica", "Africa", "Australia"]
+  default = ["Americas", "Europe", "Asia", "Africa"]
 }
 
 # Create Management Groups for each continent

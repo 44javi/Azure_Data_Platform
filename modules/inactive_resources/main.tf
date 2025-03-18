@@ -17,7 +17,7 @@ resource "azurerm_resource_group" "manage" {
 
 # Storage account for state
 resource "azurerm_storage_account" "this" {
-  name                = "uniquestate${random_string.this.result}"
+  name                = "state${random_string.this.result}"
   location            = var.region
   resource_group_name = azurerm_resource_group.manage.name
 

@@ -5,7 +5,7 @@ resource "azurerm_databricks_workspace" "this" {
   name                        = "${var.client}_databricks_workspace_${var.suffix}"
   resource_group_name         = var.resource_group_name
   location                    = var.region
-  sku                         = "premium" # Chose premium for job clusters and private endpoint, Role-Based Access Control (RBAC), Audit Logs, and Cluster Policies.
+  sku                         = "premium"                                 # Chose premium for job clusters and private endpoint, Role-Based Access Control (RBAC), Audit Logs, and Cluster Policies.
   managed_resource_group_name = "${var.client}_clusters_rg_${var.suffix}" # Databricks creates a mandatory managed RG
 
   tags = var.default_tags
@@ -15,7 +15,7 @@ resource "azurerm_databricks_workspace" "this" {
   custom_parameters {
     no_public_ip                                         = true
     virtual_network_id                                   = var.vnet_id
-    public_subnet_name                                   = azurerm_subnet.databricks_public_subnet.name 
+    public_subnet_name                                   = azurerm_subnet.databricks_public_subnet.name
     private_subnet_name                                  = azurerm_subnet.databricks_private_subnet.name
     public_subnet_network_security_group_association_id  = azurerm_subnet_network_security_group_association.nsg_assoc_public.id
     private_subnet_network_security_group_association_id = azurerm_subnet_network_security_group_association.nsg_assoc_private.id
@@ -27,7 +27,7 @@ resource "azurerm_subnet" "databricks_public_subnet" {
   name                 = "${var.client}_databricks_public_subnet_${var.suffix}"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
-  address_prefixes     = [var.subnet_address_prefixes["databricks_public_subnet"]] 
+  address_prefixes     = [var.subnet_address_prefixes["databricks_public_subnet"]]
 
   # Disable default outbound access
   default_outbound_access_enabled = false
@@ -51,7 +51,7 @@ resource "azurerm_subnet" "databricks_private_subnet" {
   name                 = "${var.client}_databricks_private_subnet_${var.suffix}"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
-  address_prefixes     = [var.subnet_address_prefixes["databricks_private_subnet"]] 
+  address_prefixes     = [var.subnet_address_prefixes["databricks_private_subnet"]]
 
   # Disable default outbound access
   default_outbound_access_enabled = false
@@ -113,4 +113,18 @@ resource "azurerm_subnet_nat_gateway_association" "databricks_public" {
 resource "azurerm_subnet_nat_gateway_association" "databricks_private" {
   subnet_id      = azurerm_subnet.databricks_private_subnet.id
   nat_gateway_id = var.nat_gateway_id
+}
+
+# Enable logs for Databricks workspace
+resource "azurerm_monitor_diagnostic_setting" "dbx" {
+  name                       = "${var.client}_databricks_diagnostics_${var.suffix}"
+  target_resource_id         = azurerm_databricks_workspace.this.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  dynamic "enabled_log" {
+    for_each = var.dbx_logs
+    content {
+      category = enabled_log.value
+    }
+  }
 }

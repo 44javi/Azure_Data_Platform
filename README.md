@@ -44,9 +44,11 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 ## Diagrams
 
 ### Azure Architecture
+
 ![Azure Diagram](assets/Azure_architecture.png)
 
 ### Databricks Architecture
+
 ![Databricks Diagram](assets/Databricks_architecture.png)
 
 > ⚠️ **Note:** The diagrams are a **high level overview** and don't capture the **all deployed resources**.
@@ -60,7 +62,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 ├── /environments                 # Environment configurations
 │   └── backend_dev.hcl           # Backend configuration for dev environment
 ├── /modules
-│   ├── /data_resources           # Module for storage related resources
+│   ├── /storage                  # Module for storage related resources
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   └── outputs.tf
@@ -68,8 +70,8 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 │   │   ├── main.tf               # Workspace, subnets, NSGs, and NAT gateway
 │   │   ├── variables.tf
 │   │   └── outputs.tf
-│   ├── /entra_id                 # Module for Entra ID resources
-│   │   ├── main.tf               # Service principals, app registrations, groups
+│   ├── /security                 # Module for security related resources
+│   │   ├── main.tf               # Service principals, Key vault, security groups, etc
 │   │   ├── variables.tf
 │   │   └── outputs.tf
 │   ├── /inactive_resources       # Module for resources currently not in use
@@ -87,7 +89,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 │       ├── variables.tf
 │       └── outputs.tf
 ├── module_blocks.tf              # Core configuration to orchestrate modules
-├── provider.tf                   # Azure providers
+├── provider.tf                   # Azure and Databricks providers
 ├── variables.tf                  # Variables for the project
 ├── variables.auto.tfvars         # Default values for variables
 ├── management_resources.tf       # For resources that apply to all modules
