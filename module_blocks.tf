@@ -106,4 +106,28 @@ module "unity_catalog" {
   ]
 }
 
+module "compute" {
+  source = "./modules/compute"
+  providers = {
+    azapi = azapi
+  }
+  client              = var.client
+  suffix              = var.suffix
+  username            = var.username
+  resource_group_name = azurerm_resource_group.main.name
+  resource_group_id   = azurerm_resource_group.main.id
+  region              = var.region
+  vnet_id             = module.network.vnet_id
+  vnet_name           = module.network.vnet_name
+  subnet_id           = module.network.subnet_id
+  public_subnet_id    = module.network.public_subnet_id
+  default_tags        = local.default_tags
+
+  depends_on = [
+    module.security,
+    module.storage,
+    module.databricks_workspace,
+    module.unity_catalog
+  ]
+}
 

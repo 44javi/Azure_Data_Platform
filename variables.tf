@@ -34,7 +34,7 @@ variable "subnet_address_prefixes" {
 
 variable "trusted_ip_ranges" {
   description = "List of trusted IP ranges for access to public VMs"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "alert_email" {
@@ -98,8 +98,13 @@ variable "dbx_logs" {
   default     = []
 }
 
-variable "adls_logs"{
+variable "adls_logs" {
   description = "List of Data Lake logs to enable"
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
+}
+
+variable "username" {
+  description = "Username for accounts"
+  type        = string
 }

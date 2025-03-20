@@ -20,6 +20,10 @@ terraform {
       source  = "databricks/databricks"
       version = "~> 1.6"
     }
+    azapi ={
+      source = "azure/azapi"
+      version = "~> 2.3.0"
+    }
   }
 }
 
@@ -32,6 +36,10 @@ provider "azurerm" {
 provider "azuread" {
   # configuration options
 }
+
+provider "azapi" {
+  # configuration options
+  }
 
 provider "databricks" {
   alias = "create_workspace"
@@ -47,3 +55,4 @@ provider "databricks" {
   azure_tenant_id            = module.entra_id.tenant_id
   */
 }
+
