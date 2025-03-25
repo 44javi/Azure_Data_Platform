@@ -43,6 +43,3 @@ terraform.rc
 # Ignore SAST scans
 **checkov*
 
-*.go
-go.mod
-go.sum
