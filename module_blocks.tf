@@ -113,10 +113,10 @@ module "compute" {
   }
   client              = var.client
   suffix              = var.suffix
+  region              = var.region
   username            = var.username
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
-  region              = var.region
   vnet_id             = module.network.vnet_id
   vnet_name           = module.network.vnet_name
   subnet_id           = module.network.subnet_id
