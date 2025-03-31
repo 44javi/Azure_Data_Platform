@@ -4,7 +4,7 @@ terraform {
   required_providers {
     databricks = {
       source                = "databricks/databricks"
-      version               = "~> 1.6"
+      version               = "~> 1.70.0"
       configuration_aliases = [databricks.workspace_resources]
     }
     azurerm = {
