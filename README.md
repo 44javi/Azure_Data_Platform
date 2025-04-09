@@ -1,4 +1,4 @@
-# Azure Data Platform 🚀
+# Azure Data Platform 
 
 A repository for automating **Azure** and **Databricks** deployments with **Terraform**.
 
@@ -51,7 +51,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 
 ![Databricks Diagram](assets/Databricks_architecture.png)
 
-> ⚠️ **Note:** The diagrams are a **high level overview** and don't capture the **all deployed resources**.
+> **Note:** The diagrams are a **high level overview** and don't capture the **all deployed resources**.
 
 ---
 
