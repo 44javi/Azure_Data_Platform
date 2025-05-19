@@ -28,6 +28,7 @@ resource "azurerm_storage_account" "adls" {
   name                            = "datalakestorage${random_string.this.result}"
   resource_group_name             = var.resource_group_name
   location                        = var.region
+  min_tls_version                 = "TLS1_2"
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
   account_kind                    = "StorageV2"
@@ -51,7 +52,7 @@ resource "azurerm_storage_account" "adls" {
 resource "azurerm_storage_container" "this" {
   for_each              = toset(["bronze", "silver", "gold", "catalog"])
   name                  = each.key
-  storage_account_id  = azurerm_storage_account.adls.id
+  storage_account_id    = azurerm_storage_account.adls.id
   container_access_type = "private"
 }
 
@@ -78,7 +79,7 @@ resource "azurerm_monitor_diagnostic_setting" "adls" {
   target_resource_id         = "${azurerm_storage_account.adls.id}/blobServices/default"
   log_analytics_workspace_id = var.log_analytics_id
 
-   dynamic "enabled_log" {
+  dynamic "enabled_log" {
     for_each = var.adls_logs
     content {
       category = enabled_log.value
@@ -88,7 +89,7 @@ resource "azurerm_monitor_diagnostic_setting" "adls" {
   metric {
     category = "Transaction"
     enabled  = true
-    
+
   }
 }
 
