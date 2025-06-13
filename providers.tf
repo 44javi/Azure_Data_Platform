@@ -1,4 +1,4 @@
-# Root Providers and backend
+# providers.tf (versions.tf) and backend
 
 terraform {
   backend "azurerm" {} # Settings come from backend.hcl
