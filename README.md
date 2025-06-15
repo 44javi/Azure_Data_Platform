@@ -62,6 +62,10 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 ├── /environments                 # Environment configurations
 │   └── backend_dev.hcl           # Backend configuration for dev environment
 ├── /modules
+│   ├── /compute                  # Module for compute related resources
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
 │   ├── /storage                  # Module for storage related resources
 │   │   ├── main.tf
 │   │   ├── variables.tf
@@ -84,7 +88,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 │   │   ├── main.tf               # VNets, public/private subnets, NSGs, etc
 │   │   ├── variables.tf
 │   │   └── outputs.tf
-│   └── /unity_catalog            # Module for Unity Catalog resources
+│   └── /unity_catalog            # Module for databricks workspace resources
 │       ├── main.tf               # Catalogs, schemas, and external locations
 │       ├── variables.tf
 │       └── outputs.tf
