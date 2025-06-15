@@ -2,11 +2,11 @@
 
 # Azure Databricks Workspace with VNet injection
 resource "azurerm_databricks_workspace" "this" {
-  name                        = "${var.client}_databricks_workspace_${var.suffix}"
+  name                        = "dbx-workspace-${var.client}-${var.suffix}"
   resource_group_name         = var.resource_group_name
   location                    = var.region
   sku                         = "premium"                                 # Chose premium for job clusters and private endpoint, Role-Based Access Control (RBAC), Audit Logs, and Cluster Policies.
-  managed_resource_group_name = "${var.client}_clusters_rg_${var.suffix}" # Databricks creates a mandatory managed RG
+  managed_resource_group_name = "clusters-rg-${var.client}-${var.suffix}" # Databricks creates a mandatory managed RG
 
   tags = var.default_tags
 
@@ -24,7 +24,7 @@ resource "azurerm_databricks_workspace" "this" {
 
 # Public Subnet for Databricks
 resource "azurerm_subnet" "databricks_public_subnet" {
-  name                 = "${var.client}_databricks_public_subnet_${var.suffix}"
+  name                 = "dbx-public-subnet-${var.client}-${var.suffix}"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
   address_prefixes     = [var.subnet_address_prefixes["databricks_public_subnet"]]
@@ -48,7 +48,7 @@ resource "azurerm_subnet" "databricks_public_subnet" {
 
 # Private or Container Subnet for Databricks 
 resource "azurerm_subnet" "databricks_private_subnet" {
-  name                 = "${var.client}_databricks_private_subnet_${var.suffix}"
+  name                 = "dbx-private-subnet-${var.client}-${var.suffix}"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
   address_prefixes     = [var.subnet_address_prefixes["databricks_private_subnet"]]
@@ -72,9 +72,9 @@ resource "azurerm_subnet" "databricks_private_subnet" {
 
 
 
-# NSG for Public Subnet
+# NSG for Public Subnet nsg
 resource "azurerm_network_security_group" "databricks_public_nsg" {
-  name                = "${var.client}_databricks_public_nsg_${var.suffix}"
+  name                = "dbx-public-nsg-${var.client}-${var.suffix}"
   location            = var.region
   resource_group_name = var.resource_group_name
 
@@ -83,7 +83,7 @@ resource "azurerm_network_security_group" "databricks_public_nsg" {
 
 # NSG for Private Subnet
 resource "azurerm_network_security_group" "databricks_private_nsg" {
-  name                = "${var.client}_databricks_private_nsg_${var.suffix}"
+  name                = "dbx-private-nsg-${var.client}-${var.suffix}"
   location            = var.region
   resource_group_name = var.resource_group_name
 

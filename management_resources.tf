@@ -19,7 +19,7 @@ resource "azurerm_management_group" "continents" {
 
 # Create a Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "${var.client}_Data_Platform_${var.suffix}"
+  name     = "rg-data-platform-${var.client}-${var.suffix}"
   location = var.region
 }
 

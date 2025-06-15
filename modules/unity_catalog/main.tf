@@ -16,7 +16,7 @@ terraform {
 
 # Unity Catalog Access Connector
 resource "azurerm_databricks_access_connector" "unity" {
-  name                = "${var.client}_Unity_Catalog_${var.suffix}"
+  name                = "uc-connector-${var.client}-${var.suffix}"
   resource_group_name = var.resource_group_name
   location            = var.region
   identity {

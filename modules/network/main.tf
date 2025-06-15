@@ -6,7 +6,7 @@ data "azurerm_client_config" "current" {}
 
 # Create the Virtual Network
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.client}_vnet_${var.suffix}"
+  name                = "vnet-${var.client}-${var.suffix}"
   address_space       = var.vnet_address_space
   location            = var.region
   resource_group_name = var.resource_group_name
@@ -16,7 +16,7 @@ resource "azurerm_virtual_network" "vnet" {
 
 # Creates the private subnet for VMs
 resource "azurerm_subnet" "private" {
-  name                            = "${var.client}_private_subnet_${var.suffix}"
+  name                            = "snet-private-${var.client}-${var.suffix}"
   resource_group_name             = var.resource_group_name
   virtual_network_name            = azurerm_virtual_network.vnet.name
   address_prefixes                = [var.subnet_address_prefixes["private_subnet"]]
@@ -25,7 +25,7 @@ resource "azurerm_subnet" "private" {
 
 # Creates the public subnet
 resource "azurerm_subnet" "public" {
-  name                            = "${var.client}_public_subnet_${var.suffix}"
+  name                            = "snet-public-${var.client}-${var.suffix}"
   resource_group_name             = var.resource_group_name
   virtual_network_name            = azurerm_virtual_network.vnet.name
   address_prefixes                = [var.subnet_address_prefixes["public_subnet"]]
@@ -34,7 +34,7 @@ resource "azurerm_subnet" "public" {
 
 # NSG for public subnet
 resource "azurerm_network_security_group" "public" {
-  name                = "${var.client}_public_nsg_${var.suffix}"
+  name                = "nsg-public-${var.client}-${var.suffix}"
   location            = var.region
   resource_group_name = var.resource_group_name
 
@@ -99,7 +99,7 @@ resource "azurerm_subnet_network_security_group_association" "public" {
 
 # Creates the NAT Gateway
 resource "azurerm_nat_gateway" "this" {
-  name                = "${var.client}_nat_gateway_${var.suffix}"
+  name                = "ng-${var.client}-${var.suffix}"
   resource_group_name = var.resource_group_name
   location            = var.region
 
@@ -108,7 +108,7 @@ resource "azurerm_nat_gateway" "this" {
 
 # Creates the Public IP for NAT Gateway
 resource "azurerm_public_ip" "nat_gateway" {
-  name                = "${var.client}_nat_gateway_ip_${var.suffix}"
+  name                = "ng-ip-${var.client}-${var.suffix}"
   resource_group_name = var.resource_group_name
   location            = var.region
   allocation_method   = "Static"
@@ -147,7 +147,7 @@ resource "azurerm_subnet_nat_gateway_association" "nat_gateway_subnet_assoc" {
 
 # Creates the the subnet for Azure Bastion
 resource "azurerm_subnet" "bastion" {
-  name                 = "${var.client}_bastion_subnet_${var.suffix}" 
+  name                 = "snet-bastion${var.client}-${var.suffix}" 
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.subnet_address_prefixes["bastion_subnet"]]
@@ -155,7 +155,7 @@ resource "azurerm_subnet" "bastion" {
 
 # Network Security group for private subnet
 resource "azurerm_network_security_group" "private" {
-  name                = "${var.client}_private_nsg_${var.suffix}"
+  name                = "nsg-private-${var.client}-${var.suffix}"
   location            = var.region
   resource_group_name = var.resource_group_name
 

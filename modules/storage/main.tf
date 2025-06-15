@@ -12,7 +12,7 @@ resource "random_string" "this" {
 
 # Assigned to the VMs that need access to the datalake
 resource "azurerm_user_assigned_identity" "datalake" {
-  name                = "${var.client}_datalake_access_${var.suffix}"
+  name                = "id-adls-access-${var.client}-${var.suffix}"
   resource_group_name = var.resource_group_name
   location            = var.region
 }
@@ -25,7 +25,7 @@ resource "azurerm_role_assignment" "datalake_blob_contributor" {
 
 # Data Lake Storage
 resource "azurerm_storage_account" "adls" {
-  name                            = "datalakestorage${random_string.this.result}"
+  name                            = "dls${random_string.this.result}"
   resource_group_name             = var.resource_group_name
   location                        = var.region
   min_tls_version                 = "TLS1_2"
@@ -59,7 +59,7 @@ resource "azurerm_storage_container" "this" {
 
 # Private Endpoint for ADLS (Azure Data Lake Storage)
 resource "azurerm_private_endpoint" "adls" {
-  name                = "${var.client}_adls-pe_${var.suffix}"
+  name                = "pe-adls-${var.client}-${var.suffix}"
   location            = var.region
   resource_group_name = var.resource_group_name
   subnet_id           = var.subnet_id
@@ -75,7 +75,7 @@ resource "azurerm_private_endpoint" "adls" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "adls" {
-  name                       = "${var.client}_adls_logs_${var.suffix}"
+  name                       = "logs-adls-${var.client}-${var.suffix}"
   target_resource_id         = "${azurerm_storage_account.adls.id}/blobServices/default"
   log_analytics_workspace_id = var.log_analytics_id
 
@@ -93,29 +93,3 @@ resource "azurerm_monitor_diagnostic_setting" "adls" {
   }
 }
 
-/*
-
-# Data Permissions
-
-# User assigned identity for databricks
-resource "azurerm_user_assigned_identity" "databricks" {
-  name                = "databricks-managed-identity"
-  resource_group_name = var.resource_group_name
-  location            = var.region
-}
-
-# Role Assignment for Databricks to access ADLS Gen2
-resource "azurerm_role_assignment" "databricks_adls_access" {
-  scope                = azurerm_storage_account.adls.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_user_assigned_identity.databricks.principal_id
-}
-
-# Role Assignment for Databricks User-Assigned Identity to Access Databricks Workspace
-resource "azurerm_role_assignment" "databricks_identity_access" {
-  scope                = azurerm_databricks_workspace.this.id
-  role_definition_name = "Contributor"
-  principal_id         = azurerm_user_assigned_identity.databricks.principal_id
-}
-
-*/

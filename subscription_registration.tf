@@ -1,3 +1,5 @@
+/*
+
 variable "subscription_register_resource_providers_enabled" {
   type        = bool
   description = <<DESCRIPTION
@@ -84,3 +86,4 @@ DESCRIPTION
     "Microsoft.Web"                     = [],
   }
 }
+*/
