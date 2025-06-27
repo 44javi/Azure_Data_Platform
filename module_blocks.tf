@@ -13,6 +13,17 @@ module "network" {
   default_tags            = local.default_tags
 }
 
+module "monitoring" {
+  source              = "./modules/monitoring"
+  resource_group_name = azurerm_resource_group.main.name
+  resource_group_id   = azurerm_resource_group.main.id
+  region              = var.region
+  client              = var.client
+  suffix              = var.suffix
+  alert_email         = var.alert_email
+  default_tags        = local.default_tags
+}
+
 module "storage" {
   source              = "./modules/storage"
   resource_group_name = azurerm_resource_group.main.name
@@ -27,18 +38,10 @@ module "storage" {
   log_analytics_id    = module.monitoring.log_analytics_id
   adls_logs           = var.adls_logs
 
-  depends_on = [module.network]
-}
-
-module "monitoring" {
-  source              = "./modules/monitoring"
-  resource_group_name = azurerm_resource_group.main.name
-  resource_group_id   = azurerm_resource_group.main.id
-  region              = var.region
-  client              = var.client
-  suffix              = var.suffix
-  alert_email         = var.alert_email
-  default_tags        = local.default_tags
+  depends_on = [
+    module.network,
+    module.monitoring
+  ]
 }
 
 module "databricks_workspace" {
@@ -58,6 +61,7 @@ module "databricks_workspace" {
   dbx_logs                = var.dbx_logs
 
   depends_on = [
+    module.network,
     module.storage,
     module.monitoring
   ]
@@ -100,7 +104,6 @@ module "unity_catalog" {
   metastore_id        = var.metastore_id
 
   depends_on = [
-    module.security,
     module.storage,
     module.databricks_workspace
   ]
@@ -124,7 +127,6 @@ module "compute" {
   default_tags        = local.default_tags
 
   depends_on = [
-    module.security,
     module.storage,
     module.databricks_workspace,
     module.unity_catalog
