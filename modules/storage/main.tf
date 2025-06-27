@@ -25,7 +25,7 @@ resource "azurerm_role_assignment" "datalake_blob_contributor" {
 
 # Data Lake Storage
 resource "azurerm_storage_account" "adls" {
-  name                            = "dls${random_string.this.result}"
+  name                            = "adls${random_string.this.result}"
   resource_group_name             = var.resource_group_name
   location                        = var.region
   min_tls_version                 = "TLS1_2"
