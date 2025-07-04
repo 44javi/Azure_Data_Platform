@@ -62,7 +62,6 @@ module "databricks_workspace" {
 
   depends_on = [
     module.network,
-    module.storage,
     module.monitoring
   ]
 }
