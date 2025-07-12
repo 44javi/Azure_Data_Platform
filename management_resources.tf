@@ -6,7 +6,7 @@ data "azurerm_client_config" "current" {}
 # Define the list of continents (Management Groups)
 variable "continents" {
   type    = list(string)
-  default = ["Americas", "Europe", "Asia", "Africa"]
+  default = ["US", "Japan"]
 }
 
 # Create Management Groups for each continent
@@ -19,7 +19,7 @@ resource "azurerm_management_group" "continents" {
 
 # Create a Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "rg-data-platform-${var.client}-${var.suffix}"
+  name     = "rg-${var.client}-${var.suffix}-data-platform"
   location = var.region
 }
 

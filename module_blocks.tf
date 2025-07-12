@@ -44,8 +44,8 @@ module "storage" {
   ]
 }
 
-module "databricks_workspace" {
-  source                  = "./modules/databricks_workspace"
+module "dbx_workspace" {
+  source                  = "./modules/dbx_workspace"
   client                  = var.client
   resource_group_name     = azurerm_resource_group.main.name
   region                  = var.region
@@ -74,13 +74,13 @@ module "security" {
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
   default_tags        = local.default_tags
-  workspace_id        = module.databricks_workspace.workspace_id
+  workspace_id        = module.dbx_workspace.workspace_id
   datalake_id         = module.storage.datalake_id
-  workspace_url       = module.databricks_workspace.workspace_url
+  workspace_url       = module.dbx_workspace.workspace_url
   account_id          = var.account_id
 
   depends_on = [
-    module.databricks_workspace,
+    module.dbx_workspace,
     module.storage
   ]
 }
@@ -99,12 +99,12 @@ module "unity_catalog" {
   secondary_region    = var.secondary_region
   datalake_name       = module.storage.datalake_name
   datalake_id         = module.storage.datalake_id
-  workspace_id        = module.databricks_workspace.workspace_id
+  workspace_id        = module.dbx_workspace.workspace_id
   metastore_id        = var.metastore_id
 
   depends_on = [
     module.storage,
-    module.databricks_workspace
+    module.dbx_workspace
   ]
 }
 
@@ -127,7 +127,7 @@ module "compute" {
 
   depends_on = [
     module.storage,
-    module.databricks_workspace,
+    module.dbx_workspace,
     module.unity_catalog
   ]
 }
