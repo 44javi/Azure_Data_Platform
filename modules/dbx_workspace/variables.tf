@@ -15,8 +15,8 @@ variable "region" {
   type        = string
 }
 
-variable "suffix" {
-  description = "Unique suffix for naming"
+variable "environment" {
+  description = "Environment for naming"
   type        = string
 }
 

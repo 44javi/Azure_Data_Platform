@@ -7,7 +7,7 @@ module "network" {
   trusted_ip_ranges       = var.trusted_ip_ranges
   region                  = var.region
   client                  = var.client
-  suffix                  = var.suffix
+  environment                  = var.environment
   default_tags            = local.default_tags
 }
 

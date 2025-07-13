@@ -1,5 +1,5 @@
 resource "azurerm_monitor_action_group" "alerts" {
-  name                = "alerts-${var.client}-${var.suffix}"
+  name                = "alerts-${var.client}-${var.environment}"
   resource_group_name = var.resource_group_name
   short_name          = "alerts"
 
@@ -10,7 +10,7 @@ resource "azurerm_monitor_action_group" "alerts" {
 }
 
 resource "azurerm_log_analytics_workspace" "this" {
-  name                = "log${var.client}${var.suffix}"
+  name                = "log${var.client}${var.environment}"
   location            = var.region
   resource_group_name = var.resource_group_name
   sku                 = "PerGB2018"   # SKUs: Free, PerGB2018, Standalone, CapacityReservation

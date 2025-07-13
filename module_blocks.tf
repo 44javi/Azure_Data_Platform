@@ -9,7 +9,7 @@ module "network" {
   trusted_ip_ranges       = var.trusted_ip_ranges
   region                  = var.region
   client                  = var.client
-  suffix                  = var.suffix
+  environment             = var.environment
   default_tags            = local.default_tags
 }
 
@@ -19,7 +19,7 @@ module "monitoring" {
   resource_group_id   = azurerm_resource_group.main.id
   region              = var.region
   client              = var.client
-  suffix              = var.suffix
+  environment         = var.environment
   alert_email         = var.alert_email
   default_tags        = local.default_tags
 }
@@ -33,7 +33,7 @@ module "storage" {
   vnet_name           = module.network.vnet_name
   subnet_id           = module.network.subnet_id
   client              = var.client
-  suffix              = var.suffix
+  environment         = var.environment
   default_tags        = local.default_tags
   log_analytics_id    = module.monitoring.log_analytics_id
   adls_logs           = var.adls_logs
@@ -49,7 +49,7 @@ module "dbx_workspace" {
   client                  = var.client
   resource_group_name     = azurerm_resource_group.main.name
   region                  = var.region
-  suffix                  = var.suffix
+  environment             = var.environment
   default_tags            = local.default_tags
   subnet_address_prefixes = var.subnet_address_prefixes
   vnet_id                 = module.network.vnet_id
@@ -69,7 +69,7 @@ module "dbx_workspace" {
 module "security" {
   source              = "./modules/security"
   client              = var.client
-  suffix              = var.suffix
+  environment         = var.environment
   region              = var.region
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
@@ -92,7 +92,7 @@ module "unity_catalog" {
   }
 
   client              = var.client
-  suffix              = var.suffix
+  environment         = var.environment
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
   region              = var.region
@@ -114,7 +114,7 @@ module "compute" {
     azapi = azapi
   }
   client              = var.client
-  suffix              = var.suffix
+  environment         = var.environment
   region              = var.region
   username            = var.username
   resource_group_name = azurerm_resource_group.main.name

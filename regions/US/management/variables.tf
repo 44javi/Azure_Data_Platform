@@ -35,7 +35,7 @@ variable "client" {
   type = string
 }
 
-variable "suffix" {
+variable "environment" {
   description = "Numerical identifier for resources"
   type        = string
 }

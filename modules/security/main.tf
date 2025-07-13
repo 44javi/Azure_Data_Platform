@@ -34,7 +34,7 @@ resource "azurerm_role_assignment" "data_engineers_datalake" {
 
 # Creates a Key Vault 
 resource "azurerm_key_vault" "this" {
-  name                       = "kv${var.client}${var.suffix}"
+  name                       = "kv${var.client}${var.environment}"
   resource_group_name        = var.resource_group_name
   location                   = var.region
   tenant_id                  = data.azurerm_client_config.current.tenant_id

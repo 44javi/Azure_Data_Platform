@@ -6,7 +6,7 @@ variable "client" {
 }
 
 variable "environment" {
-  description = "Environment for the resources (e.g., dev, prod)."
+  description = "Environment for the resources"
   type        = string
 }
 
@@ -42,11 +42,6 @@ variable "alert_email" {
   type        = string
 }
 
-variable "suffix" {
-  description = "Numerical identifier for resources"
-  type        = string
-}
-
 variable "owner" {
   description = "Person responsible for the resource"
   type        = string
@@ -59,11 +54,6 @@ variable "project" {
 
 variable "created_by" {
   description = "Tag showing Terraform created this resource"
-  type        = string
-}
-
-variable "subscription_id" {
-  description = "Subscription_ID to deploy resources to"
   type        = string
 }
 

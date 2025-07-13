@@ -12,7 +12,7 @@ resource "random_string" "this" {
 
 # Assigned to the VMs that need access to the datalake
 resource "azurerm_user_assigned_identity" "datalake" {
-  name                = "id-adls-access-${var.client}-${var.suffix}"
+  name                = "id-adls-access-${var.client}-${var.environment}"
   resource_group_name = var.resource_group_name
   location            = var.region
 }
@@ -59,7 +59,7 @@ resource "azurerm_storage_container" "this" {
 
 # Private Endpoint for ADLS (Azure Data Lake Storage)
 resource "azurerm_private_endpoint" "adls" {
-  name                = "pe-adls-${var.client}-${var.suffix}"
+  name                = "pe-adls-${var.client}-${var.environment}"
   location            = var.region
   resource_group_name = var.resource_group_name
   subnet_id           = var.subnet_id
@@ -75,7 +75,7 @@ resource "azurerm_private_endpoint" "adls" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "adls" {
-  name                       = "logs-adls-${var.client}-${var.suffix}"
+  name                       = "logs-adls-${var.client}-${var.environment}"
   target_resource_id         = "${azurerm_storage_account.adls.id}/blobServices/default"
   log_analytics_workspace_id = var.log_analytics_id
 

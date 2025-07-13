@@ -5,8 +5,8 @@ variable "client" {
   type        = string
 }
 
-variable "suffix" {
-  description = "Unique suffix for naming"
+variable "environment" {
+  description = "Unique environment for naming"
   type        = string
 }
 

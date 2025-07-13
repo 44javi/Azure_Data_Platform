@@ -18,7 +18,7 @@ subscription_id = "REPLACE_WITH_SUBSCRIPTION_ID"
 
 # Resource Naming
 client = "Client"
-suffix = "001"
+environment = "001"
 
 region          = "westus2"
 secondary_region   = "eastus2"

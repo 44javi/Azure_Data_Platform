@@ -11,7 +11,7 @@ resource "random_string" "this" {
 
 # Create a Resource Group
 resource "azurerm_resource_group" "manage" {
-  name     = "${var.client}_Management_Resources_${var.suffix}"
+  name     = "${var.client}_Management_Resources_${var.environment}"
   location = var.region
 }
 
@@ -64,8 +64,8 @@ resource "azurerm_storage_container" "this" {
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
-# Generate a random string for the VM name suffix
-resource "random_string" "vm_name_suffix" {
+# Generate a random string for the VM name environment
+resource "random_string" "vm_name_environment" {
   length  = 8
   upper   = false
   special = false
@@ -111,7 +111,7 @@ resource "local_file" "ssh_private_key" {
 
 # Create the Virtual Machine
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "dev-vm-${random_string.vm_name_suffix.result}"
+  name                = "dev-vm-${random_string.vm_name_environment.result}"
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
   size                = "Standard_D4s_v3"
@@ -299,7 +299,7 @@ module "jobs" {
   }
 
   client                    = var.client
-  suffix                    = var.suffix
+  environment                    = var.environment
   databricks_identity_id = azurerm_user_assigned_identity.databricks.client_id
   tenant_id                 = data.azurerm_client_config.current.tenant_id
   notebook_path            = databricks_notebook.gzip_to_parquet.path
@@ -415,7 +415,7 @@ resource "azurerm_private_endpoint" "databricks_private_endpoint" {
 
 # Synapse Analytics Workspace
 resource "azurerm_synapse_workspace" "synapse_workspace" {
-  name                               = "synapse-workspace-${random_string.unique_suffix.result}"
+  name                               = "synapse-workspace-${random_string.unique_environment.result}"
   resource_group_name                = azurerm_resource_group.dev-rg.name
   location                           = azurerm_resource_group.dev-rg.location
   storage_data_lake_gen2_filesystem_id = "https://${azurerm_storage_account.adls_storage.name}.dfs.core.windows.net/${azurerm_storage_data_lake_gen2_filesystem.adls_filesystem.name}"
