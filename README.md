@@ -70,7 +70,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 │   │   ├── main.tf
 │   │   ├── variables.tf
 │   │   └── outputs.tf
-│   ├── /databricks_workspace     # Module for Databricks workspace with VNET injection
+│   ├── /dbx_workspace            # Module for Databricks workspace with VNET injection
 │   │   ├── main.tf               # Workspace, subnets, NSGs, and NAT gateway
 │   │   ├── variables.tf
 │   │   └── outputs.tf
