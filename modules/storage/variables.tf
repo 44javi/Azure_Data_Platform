@@ -56,14 +56,7 @@ variable "adls_logs"{
   default = []
 }
 
-/*
-variable "bronze_container" {
-  description = "Name of the container for raw data"
-  type        = string
+variable "containers" {
+  description = "Storage containers for data lake"
+  type        = list(any)
 }
-
-variable "gold_container" {
-  description = "Name of the container for processed data"
-  type        = string
-}
-*/

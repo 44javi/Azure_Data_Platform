@@ -50,7 +50,7 @@ resource "azurerm_storage_account" "adls" {
 # Containers for 
 
 resource "azurerm_storage_container" "this" {
-  for_each              = toset(["bronze", "silver", "gold", "catalog"])
+  for_each              = toset(var.containers)
   name                  = each.key
   storage_account_id    = azurerm_storage_account.adls.id
   container_access_type = "private"

@@ -40,6 +40,16 @@ variable "datalake_id" {
   type        = string
 }
 
+variable "containers" {
+  description = "Storage containers in the data lake"
+  type        = list(any)
+}
+
+variable "schemas" {
+  description = "Schema names for dbx catalog"
+  type        = list(any)
+}
+
 variable "secondary_region" {
   description = "The 2nd region where resources will be created"
   type        = string

@@ -57,14 +57,14 @@ variable "created_by" {
   type        = string
 }
 
-variable "bronze_container" {
-  description = "Container for Raw/ingested data"
-  type        = string
+variable "containers" {
+  description = "Storage containers for data lake"
+  type        = list(any)
 }
 
-variable "gold_container" {
-  description = "Container for processed/refined data"
-  type        = string
+variable "schemas" {
+  description = "Schema names for dbx catalog"
+  type        = list(any)
 }
 
 variable "metastore_id" {

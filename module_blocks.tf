@@ -34,6 +34,7 @@ module "storage" {
   subnet_id           = module.network.subnet_id
   client              = var.client
   environment         = var.environment
+  containers          = var.containers
   default_tags        = local.default_tags
   log_analytics_id    = module.monitoring.log_analytics_id
   adls_logs           = var.adls_logs
@@ -99,6 +100,7 @@ module "unity_catalog" {
   secondary_region    = var.secondary_region
   datalake_name       = module.storage.datalake_name
   datalake_id         = module.storage.datalake_id
+  containers          = var.containers
   workspace_id        = module.dbx_workspace.workspace_id
   metastore_id        = var.metastore_id
 

@@ -54,8 +54,8 @@ resource "databricks_storage_credential" "unity" {
 # Catalog
 resource "databricks_catalog" "main" {
   provider      = databricks.workspace_resources
-  name          = "${var.client}_dev_catalog"
-  comment       = "Development catalog for client"
+  name          = "${var.client}-${var.environment}-catalog"
+  comment       = "Catalog for client"
   storage_root = databricks_external_location.catalog.url 
   
   properties = {
@@ -65,18 +65,9 @@ resource "databricks_catalog" "main" {
   depends_on = [ databricks_external_location.catalog ]
 }
 
-# External Locations
-resource "databricks_external_location" "catalog" {
-  provider        = databricks.workspace_resources
-  name            = "catalog"
-  url             = "abfss://catalog@${var.datalake_name}.dfs.core.windows.net/"
-  credential_name = databricks_storage_credential.unity.name
-  comment         = "External location for catalog root storage"
-}
-
 resource "databricks_external_location" "this" {
   provider        = databricks.workspace_resources
-  for_each        = toset(["bronze", "silver", "gold"])
+  for_each        = toset(var.containers)
   name            = "${each.key}_container"
   url             = "abfss://${each.key}@${var.datalake_name}.dfs.core.windows.net/"
   credential_name = databricks_storage_credential.unity.name
@@ -86,7 +77,7 @@ resource "databricks_external_location" "this" {
 # Schemas
 resource "databricks_schema" "schemas" {
   provider     = databricks.workspace_resources
-  for_each     = toset(["bronze_container_schema", "silver_container_schema", "gold_container_schema"])
+  for_each     = toset([for schema in var.schemas : "${schema}-schema"])
   catalog_name = databricks_catalog.main.name
   name         = each.key
   comment      = "Schema for ${each.key} data"
