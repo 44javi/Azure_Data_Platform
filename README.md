@@ -24,9 +24,9 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 ## Deployment Steps
 
 1. Initial Deployment
-   - `terraform init`
-   - `terraform plan`
-   - `terraform apply` to deploy the initial infrastructure
+   - `chmod +x ./.debug.prod.sh`
+   - `./.debug.prod.sh plan`
+   - `./.debug.prod.sh apply` to deploy the initial infrastructure
 2. Databricks Configuration
    - After the Databricks workspace is created, navigate to the workspace in the Azure portal
    - Generate a personal access token (User Settings → Developer → New Token)
@@ -37,7 +37,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
    - Enter the workspace URL and access token when prompted
    - This creates a `~/.databrickscfg` file that enables authentication and resource creation
 3. Final Deployment
-   - Run `terraform apply` again to complete the deployment of resources
+   - Run `./.debug.prod.sh apply` again to complete the deployment of resources
 
 ---
 
@@ -59,8 +59,8 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 
 ```
 /azure-terraform
-├── /environments                 # Environment configurations
-│   └── backend_dev.hcl           # Backend configuration for dev environment
+├── /env                          # Environment configurations
+│   └── prod.tfvars               
 ├── /modules
 │   ├── /compute                  # Module for compute related resources
 │   │   ├── main.tf
@@ -92,6 +92,7 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 │       ├── main.tf               # Catalogs, schemas, and external locations
 │       ├── variables.tf
 │       └── outputs.tf
+├── .debug.prod.sh                # Sets the backend and some environment variables
 ├── module_blocks.tf              # Core configuration to orchestrate modules
 ├── provider.tf                   # Azure and Databricks providers
 ├── variables.tf                  # Variables for the project
@@ -99,5 +100,6 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 ├── management_resources.tf       # For resources that apply to all modules
 ├── outputs.tf                    # Root module outputs
 └── README.md                     # Project documentation
+└── template.tf                   # Templates for tfvars and debug.sh files
 
 ```
