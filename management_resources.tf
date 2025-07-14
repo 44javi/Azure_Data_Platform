@@ -4,14 +4,14 @@ data "azurerm_client_config" "current" {}
 
 
 # Define the list of continents (Management Groups)
-variable "continents" {
+variable "countries" {
   type    = list(string)
   default = ["US", "Japan"]
 }
 
 # Create Management Groups for each continent
-resource "azurerm_management_group" "continents" {
-  for_each                    = toset(var.continents)
+resource "azurerm_management_group" "countries" {
+  for_each                    = toset(var.countries)
   display_name                = each.value
   parent_management_group_id   = var.root_management_group_id
 }

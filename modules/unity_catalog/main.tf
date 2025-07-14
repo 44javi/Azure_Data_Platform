@@ -54,15 +54,15 @@ resource "databricks_storage_credential" "unity" {
 # Catalog
 resource "databricks_catalog" "main" {
   provider      = databricks.workspace_resources
-  name          = "${var.client}-${var.environment}-catalog"
+  name          = "catalog-${var.client}-${var.environment}"
   comment       = "Catalog for client"
-  storage_root = databricks_external_location.catalog.url 
+  storage_root = databricks_external_location.this["catalog"].url 
   
   properties = {
     purpose = "Development"
   }
 
-  depends_on = [ databricks_external_location.catalog ]
+  depends_on = [ databricks_external_location.this ]
 }
 
 resource "databricks_external_location" "this" {

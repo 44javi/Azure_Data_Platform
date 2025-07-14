@@ -101,6 +101,7 @@ module "unity_catalog" {
   datalake_name       = module.storage.datalake_name
   datalake_id         = module.storage.datalake_id
   containers          = var.containers
+  schemas             = var.schemas
   workspace_id        = module.dbx_workspace.workspace_id
   metastore_id        = var.metastore_id
 
