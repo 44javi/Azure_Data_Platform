@@ -60,7 +60,8 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 ```
 /azure-terraform
 ├── /env                          # Environment configurations
-│   └── prod.tfvars               
+│   └── prod.tfvars
+│               
 ├── /modules
 │   ├── /compute                  # Module for compute related resources
 │   │   ├── main.tf
@@ -92,11 +93,52 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 │       ├── main.tf               # Catalogs, schemas, and external locations
 │       ├── variables.tf
 │       └── outputs.tf
+│
+├── /regions
+│   ├── /us
+│   │   ├── /management
+│   │   │   ├── /env
+│   │   │   │   └── prod.tfvars
+│   │   │   ├── .debug.prod.sh
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   └── /clients
+│   │       ├── /client-a
+│   │       │   ├── /env
+│   │       │   │   └── prod.tfvars
+│   │       │   ├── .debug.prod.sh
+│   │       │   ├── main.tf
+│   │       │   ├── variables.tf
+│   │       │   └── outputs.tf
+│   │       └── /client-b
+│   │           ├── /env
+│   │           │   └── prod.tfvars
+│   │           ├── .debug.prod.sh
+│   │           ├── main.tf
+│   │           ├── variables.tf
+│   │           └── outputs.tf
+│   │
+│   └── /japan
+│       ├── /management
+│       │   ├── /env
+│       │   │   └── prod.tfvars
+│       │   ├── .debug.prod.sh
+│       │   ├── main.tf
+│       │   ├── variables.tf
+│       │   └── outputs.tf
+│       └── /clients
+│           └── /client-c
+│               ├── /env
+│               │   └── prod.tfvars
+│               ├── .debug.prod.sh
+│               ├── main.tf
+│               ├── variables.tf
+│               └── outputs.tf
 ├── .debug.prod.sh                # Sets the backend and some environment variables
 ├── module_blocks.tf              # Core configuration to orchestrate modules
 ├── provider.tf                   # Azure and Databricks providers
 ├── variables.tf                  # Variables for the project
-├── variables.auto.tfvars         # Default values for variables
 ├── management_resources.tf       # For resources that apply to all modules
 ├── outputs.tf                    # Root module outputs
 └── README.md                     # Project documentation

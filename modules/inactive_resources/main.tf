@@ -2,6 +2,23 @@
 
 # For Azure Backend set up
 
+# Creates a Resource Group
+resource "azurerm_resource_group" "main" {
+  name     = "rg-${var.client}-${var.region}-${var.environment}"
+  location = var.region
+}
+
+# for tags
+locals {
+  default_tags = {
+    owner       = var.owner
+    environment = var.environment
+    client      = var.client
+    region      = var.region
+    created_by  = "Terraform"
+  }
+}
+
 # Random string for storage names
 resource "random_string" "this" {
   length  = 6
@@ -9,21 +26,12 @@ resource "random_string" "this" {
   upper   = false
 }
 
-# Create a Resource Group
-resource "azurerm_resource_group" "manage" {
-  name     = "${var.client}_Management_Resources_${var.environment}"
-  location = var.region
-}
 
 # Storage account for state
 resource "azurerm_storage_account" "this" {
-  name                = "state${random_string.this.result}"
+  name                = "ststate${random_string.this.result}"
   location            = var.region
-  resource_group_name = azurerm_resource_group.manage.name
-
-  depends_on = [
-    azurerm_resource_group.manage
-  ]
+  resource_group_name = azurerm_resource_group.main.name
 
   account_tier                      = "Standard"
   account_kind                      = "StorageV2"
@@ -55,7 +63,7 @@ resource "azurerm_storage_account" "this" {
 
 # Create container in the storage account for state
 resource "azurerm_storage_container" "this" {
-  name                  = "Data_Platform"
+  name                  = "${var.region}-state-management"
   storage_account_id    = azurerm_storage_account.this.id
   container_access_type = "private"
 }

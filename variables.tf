@@ -43,7 +43,7 @@ variable "alert_email" {
 }
 
 variable "owner" {
-  description = "Person responsible for the resource"
+  description = "Owner of the project or resources"
   type        = string
 }
 
