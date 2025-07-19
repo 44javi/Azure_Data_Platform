@@ -5,8 +5,8 @@ variable "client" {
   type        = string
 }
 
-variable "suffix" {
-  description = "Suffix for resource naming"
+variable "environment" {
+  description = "Environment for resource naming"
   type        = string
 }
 
@@ -40,12 +40,13 @@ variable "datalake_id" {
   type        = string
 }
 
-variable "secondary_region" {
-  description = "The 2nd region where resources will be created"
-  type        = string
+variable "containers" {
+  description = "Storage containers in the data lake"
+  type        = list(any)
 }
 
-variable "metastore_id" {
-  description = "ID of the default Databricks metastore"
-  type        = string
+variable "schemas" {
+  description = "Schema names for dbx catalog"
+  type        = list(any)
 }
+

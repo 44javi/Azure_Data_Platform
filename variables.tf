@@ -6,19 +6,13 @@ variable "client" {
 }
 
 variable "environment" {
-  description = "Environment for the resources (e.g., dev, prod)."
+  description = "Environment for the resources"
   type        = string
 }
 
 variable "region" {
   description = "Region where resources will be created"
   type        = string
-}
-
-variable "secondary_region" {
-  description = "2nd region for resource creation"
-  type        = string
-
 }
 
 variable "vnet_address_space" {
@@ -37,18 +31,18 @@ variable "trusted_ip_ranges" {
   type        = list(string)
 }
 
+variable "vm_private_ip" {
+  description = "Static private IP address for the VM"
+  type        = string
+}
+
 variable "alert_email" {
   description = "Email used for monitoring alerts"
   type        = string
 }
 
-variable "suffix" {
-  description = "Numerical identifier for resources"
-  type        = string
-}
-
 variable "owner" {
-  description = "Person responsible for the resource"
+  description = "Owner of the project or resources"
   type        = string
 }
 
@@ -62,24 +56,14 @@ variable "created_by" {
   type        = string
 }
 
-variable "subscription_id" {
-  description = "Subscription_ID to deploy resources to"
-  type        = string
+variable "containers" {
+  description = "Storage containers for data lake"
+  type        = list(any)
 }
 
-variable "bronze_container" {
-  description = "Container for Raw/ingested data"
-  type        = string
-}
-
-variable "gold_container" {
-  description = "Container for processed/refined data"
-  type        = string
-}
-
-variable "metastore_id" {
-  description = "ID of the default Databricks metastore"
-  type        = string
+variable "schemas" {
+  description = "Schema names for dbx catalog"
+  type        = list(any)
 }
 
 variable "account_id" {

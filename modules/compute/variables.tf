@@ -18,7 +18,7 @@ variable "client" {
   type        = string
 }
 
-variable "suffix" {
+variable "environment" {
   description = "Numerical identifier for resources"
   type        = string
 }
@@ -50,5 +50,10 @@ variable "vnet_name" {
 
 variable "username" {
   description = "Username for accounts"
+  type        = string
+}
+
+variable "vm_private_ip" {
+  description = "Static private IP address for the VM"
   type        = string
 }

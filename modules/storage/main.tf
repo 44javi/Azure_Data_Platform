@@ -3,6 +3,12 @@
 # Get Azure subscription details
 data "azurerm_client_config" "current" {}
 
+data "azuread_group" "data_engineers" {
+  display_name = "Data_Engineers"
+}
+
+
+
 # Random string for storage names
 resource "random_string" "this" {
   length  = 6
@@ -10,25 +16,13 @@ resource "random_string" "this" {
   upper   = false
 }
 
-# Assigned to the VMs that need access to the datalake
-resource "azurerm_user_assigned_identity" "datalake" {
-  name                = "id-adls-access-${var.client}-${var.suffix}"
-  resource_group_name = var.resource_group_name
-  location            = var.region
-}
-
-resource "azurerm_role_assignment" "datalake_blob_contributor" {
-  scope                = azurerm_storage_account.adls.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_user_assigned_identity.datalake.principal_id
-}
-
 # Data Lake Storage
 resource "azurerm_storage_account" "adls" {
-  name                            = "dls${random_string.this.result}"
+  name                            = "adls${random_string.this.result}"
   resource_group_name             = var.resource_group_name
   location                        = var.region
   min_tls_version                 = "TLS1_2"
+  https_traffic_only_enabled      = true
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
   account_kind                    = "StorageV2"
@@ -50,7 +44,7 @@ resource "azurerm_storage_account" "adls" {
 # Containers for 
 
 resource "azurerm_storage_container" "this" {
-  for_each              = toset(["bronze", "silver", "gold", "catalog"])
+  for_each              = toset(var.containers)
   name                  = each.key
   storage_account_id    = azurerm_storage_account.adls.id
   container_access_type = "private"
@@ -59,7 +53,7 @@ resource "azurerm_storage_container" "this" {
 
 # Private Endpoint for ADLS (Azure Data Lake Storage)
 resource "azurerm_private_endpoint" "adls" {
-  name                = "pe-adls-${var.client}-${var.suffix}"
+  name                = "pe-adls-${var.client}-${var.environment}"
   location            = var.region
   resource_group_name = var.resource_group_name
   subnet_id           = var.subnet_id
@@ -75,7 +69,7 @@ resource "azurerm_private_endpoint" "adls" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "adls" {
-  name                       = "logs-adls-${var.client}-${var.suffix}"
+  name                       = "logs-adls-${var.client}-${var.environment}"
   target_resource_id         = "${azurerm_storage_account.adls.id}/blobServices/default"
   log_analytics_workspace_id = var.log_analytics_id
 
@@ -93,3 +87,9 @@ resource "azurerm_monitor_diagnostic_setting" "adls" {
   }
 }
 
+# Assign Datalake permissions 
+resource "azurerm_role_assignment" "data_engineers_datalake" {
+  scope                = azurerm_storage_account.adls.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azuread_group.data_engineers.object_id
+}

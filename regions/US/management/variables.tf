@@ -1,15 +1,5 @@
 # network module variables
 
-variable "resource_group_name" {
-  description = "The name of the resource group"
-  type        = string
-}
-
-variable "resource_group_id" {
-  description = "The full resource ID of the resource group"
-  type        = string
-}
-
 variable "vnet_address_space" {
   description = "The address space for the virtual network"
   type        = list(string)
@@ -36,11 +26,21 @@ variable "client" {
 }
 
 variable "environment" {
-  description = "Environment for resources"
+  description = "Numerical identifier for resources"
   type        = string
 }
 
-variable "default_tags" {
-    description = "Default tags to apply to all resources"
-  type = map(string)
+variable "owner" {
+  description = "Owner of the project or resources"
+  type = string
+}
+
+variable "dbx_logs" {
+  description = "List of Databricks log categories to enable"
+  type        = list(string)
+}
+
+variable "monitoring_subscription_id" {
+  description = "Subscription ID where Log Analytics workspace exists"
+  type        = string
 }

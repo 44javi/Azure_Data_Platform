@@ -1,7 +1,28 @@
-# Module_blocks in root
+# Creates a Resource Group
+resource "azurerm_resource_group" "main" {
+  name     = "rg-${var.client}-${var.environment}"
+  location = var.region
+}
+
+data "azuread_group" "data_engineers" {
+  display_name = "Data_Engineers"
+}
+
+data "azurerm_log_analytics_workspace" "main" {
+  provider            = azurerm.monitoring
+  name                = "log-management-prod"
+  resource_group_name = "rg-management-prod"
+}
+
+data "azurerm_databricks_workspace" "this" {
+  provider            = azurerm.management
+  name                = "dbx-workspace-management-prod"
+  resource_group_name = "rg-management--southcentralus-prod"
+}
+
 
 module "network" {
-  source                  = "./modules/network"
+  source                  = "../../../../modules/network"
   resource_group_name     = azurerm_resource_group.main.name
   resource_group_id       = azurerm_resource_group.main.id
   vnet_address_space      = var.vnet_address_space
@@ -13,19 +34,8 @@ module "network" {
   default_tags            = local.default_tags
 }
 
-module "monitoring" {
-  source              = "./modules/monitoring"
-  resource_group_name = azurerm_resource_group.main.name
-  resource_group_id   = azurerm_resource_group.main.id
-  region              = var.region
-  client              = var.client
-  environment         = var.environment
-  alert_email         = var.alert_email
-  default_tags        = local.default_tags
-}
-
 module "storage" {
-  source              = "./modules/storage"
+  source              = "../../../../modules/storage"
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
   region              = var.region
@@ -36,39 +46,16 @@ module "storage" {
   environment         = var.environment
   containers          = var.containers
   default_tags        = local.default_tags
-  log_analytics_id    = module.monitoring.log_analytics_id
+  log_analytics_id    = data.azurerm_log_analytics_workspace.main.id
   adls_logs           = var.adls_logs
 
   depends_on = [
-    module.network,
-    module.monitoring
-  ]
-}
-
-module "dbx_workspace" {
-  source                  = "./modules/dbx_workspace"
-  client                  = var.client
-  resource_group_name     = azurerm_resource_group.main.name
-  region                  = var.region
-  environment             = var.environment
-  default_tags            = local.default_tags
-  subnet_address_prefixes = var.subnet_address_prefixes
-  vnet_id                 = module.network.vnet_id
-  vnet_name               = module.network.vnet_name
-  subnet_id               = module.network.subnet_id
-  public_ip_id            = module.network.public_ip_id
-  nat_gateway_id          = module.network.nat_gateway_id
-  log_analytics_id        = module.monitoring.log_analytics_id
-  dbx_logs                = var.dbx_logs
-
-  depends_on = [
-    module.network,
-    module.monitoring
+    module.network
   ]
 }
 
 module "security" {
-  source              = "./modules/security"
+  source              = "../../../../modules/security"
   client              = var.client
   environment         = var.environment
   region              = var.region
@@ -77,13 +64,12 @@ module "security" {
   default_tags        = local.default_tags
 
   depends_on = [
-    module.dbx_workspace,
     module.storage
   ]
 }
 
 module "unity_catalog" {
-  source = "./modules/unity_catalog"
+  source = "../../../../modules/unity_catalog"
   providers = {
     databricks.workspace_resources = databricks.workspace_resources
   }
@@ -97,16 +83,15 @@ module "unity_catalog" {
   datalake_id         = module.storage.datalake_id
   containers          = var.containers
   schemas             = var.schemas
-  workspace_id        = module.dbx_workspace.workspace_id
+  workspace_id        = data.azurerm_databricks_workspace.this.workspace_id
 
   depends_on = [
     module.storage,
-    module.dbx_workspace
   ]
 }
 
 module "compute" {
-  source = "./modules/compute"
+  source = "../../../../modules/compute"
   providers = {
     azapi = azapi
   }
@@ -120,13 +105,23 @@ module "compute" {
   vnet_name           = module.network.vnet_name
   subnet_id           = module.network.subnet_id
   public_subnet_id    = module.network.public_subnet_id
-  vm_private_ip = var.vm_private_ip
   default_tags        = local.default_tags
+  vm_private_ip = var.vm_private_ip
 
   depends_on = [
     module.storage,
-    module.dbx_workspace,
     module.unity_catalog
   ]
 }
 
+
+# for tags
+locals {
+  default_tags = {
+    owner       = var.owner
+    environment = var.environment
+    client      = var.client
+    region      = var.region
+    created_by  = "Terraform"
+  }
+}

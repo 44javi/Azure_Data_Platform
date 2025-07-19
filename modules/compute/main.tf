@@ -135,7 +135,7 @@ df -h
 EOF
 )
 
-  computer_name                   = "vm-${var.client}-${var.suffix}"
+  computer_name                   = "vm-${var.client}-${var.environment}"
   disable_password_authentication = true
 
   tags = var.default_tags
@@ -144,7 +144,7 @@ EOF
 
 # Create Public IP for VM
 resource "azurerm_public_ip" "vm_public_ip" {
-  name                = "pip-${var.client}-${var.suffix}"
+  name                = "pip-${var.client}-${var.environment}"
   location            = var.region
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
@@ -155,7 +155,7 @@ resource "azurerm_public_ip" "vm_public_ip" {
 
 # Create the Network Interface
 resource "azurerm_network_interface" "vm_nic" {
-  name                = "nic-${var.client}-${var.suffix}"
+  name                = "nic-${var.client}-${var.environment}"
   location            = var.region
   resource_group_name = var.resource_group_name
 
@@ -163,7 +163,7 @@ resource "azurerm_network_interface" "vm_nic" {
     name                          = "internal"
     subnet_id                     = var.public_subnet_id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.44.0.7"
+    private_ip_address            = var.vm_private_ip
     public_ip_address_id          = azurerm_public_ip.vm_public_ip.id
   }
   tags = var.default_tags
