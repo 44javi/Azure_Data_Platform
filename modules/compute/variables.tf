@@ -52,3 +52,8 @@ variable "username" {
   description = "Username for accounts"
   type        = string
 }
+
+variable "vm_private_ip" {
+  description = "Static private IP address for the VM"
+  type        = string
+}

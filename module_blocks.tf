@@ -75,10 +75,6 @@ module "security" {
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
   default_tags        = local.default_tags
-  workspace_id        = module.dbx_workspace.workspace_id
-  datalake_id         = module.storage.datalake_id
-  workspace_url       = module.dbx_workspace.workspace_url
-  account_id          = var.account_id
 
   depends_on = [
     module.dbx_workspace,
@@ -97,13 +93,11 @@ module "unity_catalog" {
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
   region              = var.region
-  secondary_region    = var.secondary_region
   datalake_name       = module.storage.datalake_name
   datalake_id         = module.storage.datalake_id
   containers          = var.containers
   schemas             = var.schemas
   workspace_id        = module.dbx_workspace.workspace_id
-  metastore_id        = var.metastore_id
 
   depends_on = [
     module.storage,
@@ -126,6 +120,7 @@ module "compute" {
   vnet_name           = module.network.vnet_name
   subnet_id           = module.network.subnet_id
   public_subnet_id    = module.network.public_subnet_id
+  vm_private_ip = var.vm_private_ip
   default_tags        = local.default_tags
 
   depends_on = [

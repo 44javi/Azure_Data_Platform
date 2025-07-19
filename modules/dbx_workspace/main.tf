@@ -1,5 +1,9 @@
 # /modules/databricks_workspace/main.tf
 
+data "azuread_group" "data_engineers" {
+  display_name = "Data_Engineers"
+}
+
 # Azure Databricks Workspace with VNet injection
 resource "azurerm_databricks_workspace" "this" {
   name                        = "dbx-workspace-${var.client}-${var.environment}"
@@ -127,4 +131,11 @@ resource "azurerm_monitor_diagnostic_setting" "dbx" {
       category = enabled_log.value
     }
   }
+}
+
+# Assign Databricks Workspace permissions
+resource "azurerm_role_assignment" "data_engineers_workspace" {
+  scope                = azurerm_databricks_workspace.this.id
+  role_definition_name = "Reader"
+  principal_id         = data.azuread_group.data_engineers.object_id
 }

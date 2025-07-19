@@ -3,24 +3,17 @@
 # Get Azure subscription details
 data "azurerm_client_config" "current" {}
 
+data "azuread_group" "data_engineers" {
+  display_name = "Data_Engineers"
+}
+
+
+
 # Random string for storage names
 resource "random_string" "this" {
   length  = 6
   special = false
   upper   = false
-}
-
-# Assigned to the VMs that need access to the datalake
-resource "azurerm_user_assigned_identity" "datalake" {
-  name                = "id-adls-access-${var.client}-${var.environment}"
-  resource_group_name = var.resource_group_name
-  location            = var.region
-}
-
-resource "azurerm_role_assignment" "datalake_blob_contributor" {
-  scope                = azurerm_storage_account.adls.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_user_assigned_identity.datalake.principal_id
 }
 
 # Data Lake Storage
@@ -29,6 +22,7 @@ resource "azurerm_storage_account" "adls" {
   resource_group_name             = var.resource_group_name
   location                        = var.region
   min_tls_version                 = "TLS1_2"
+  https_traffic_only_enabled      = true
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
   account_kind                    = "StorageV2"
@@ -93,3 +87,9 @@ resource "azurerm_monitor_diagnostic_setting" "adls" {
   }
 }
 
+# Assign Datalake permissions 
+resource "azurerm_role_assignment" "data_engineers_datalake" {
+  scope                = azurerm_storage_account.adls.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azuread_group.data_engineers.object_id
+}

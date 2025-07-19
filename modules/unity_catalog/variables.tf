@@ -50,12 +50,3 @@ variable "schemas" {
   type        = list(any)
 }
 
-variable "secondary_region" {
-  description = "The 2nd region where resources will be created"
-  type        = string
-}
-
-variable "metastore_id" {
-  description = "ID of the default Databricks metastore"
-  type        = string
-}

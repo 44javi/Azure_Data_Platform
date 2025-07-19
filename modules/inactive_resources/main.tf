@@ -41,6 +41,9 @@ resource "azurerm_storage_account" "this" {
   shared_access_key_enabled         = true
   default_to_oauth_authentication   = true
   infrastructure_encryption_enabled = false
+  allow_nested_items_to_be_public   = false
+  public_network_access_enabled     = true #false blocks access to containers on the portal
+
 
   blob_properties {
     versioning_enabled            = true
@@ -67,6 +70,7 @@ resource "azurerm_storage_container" "this" {
   storage_account_id    = azurerm_storage_account.this.id
   container_access_type = "private"
 }
+
 
 
 

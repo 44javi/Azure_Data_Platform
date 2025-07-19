@@ -9,7 +9,7 @@ terraform {
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.9"
+      version = "~> 4.25.0"
     }
   }
 }
@@ -22,6 +22,12 @@ resource "azurerm_databricks_access_connector" "unity" {
   identity {
     type = "SystemAssigned"
   }
+}
+
+resource "azurerm_role_assignment" "unity_storage_account" {
+  scope                = var.datalake_id
+  role_definition_name = "Contributor"  
+  principal_id         = azurerm_databricks_access_connector.unity.identity[0].principal_id
 }
 
 # Datalake access for Unity Catalog connector

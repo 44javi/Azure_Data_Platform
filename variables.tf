@@ -15,12 +15,6 @@ variable "region" {
   type        = string
 }
 
-variable "secondary_region" {
-  description = "2nd region for resource creation"
-  type        = string
-
-}
-
 variable "vnet_address_space" {
   description = "The address space for the virtual network"
   type        = list(string)
@@ -35,6 +29,11 @@ variable "subnet_address_prefixes" {
 variable "trusted_ip_ranges" {
   description = "List of trusted IP ranges for access to public VMs"
   type        = list(string)
+}
+
+variable "vm_private_ip" {
+  description = "Static private IP address for the VM"
+  type        = string
 }
 
 variable "alert_email" {
@@ -65,11 +64,6 @@ variable "containers" {
 variable "schemas" {
   description = "Schema names for dbx catalog"
   type        = list(any)
-}
-
-variable "metastore_id" {
-  description = "ID of the default Databricks metastore"
-  type        = string
 }
 
 variable "account_id" {

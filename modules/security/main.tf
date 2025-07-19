@@ -3,6 +3,10 @@
 # Get current Azure config
 data "azurerm_client_config" "current" {}
 
+data "azuread_group" "data_engineers" {
+  display_name = "Data_Engineers"
+}
+
 # Creates a Key Vault 
 resource "azurerm_key_vault" "this" {
   name                       = "kv${var.client}${var.environment}"
@@ -15,4 +19,11 @@ resource "azurerm_key_vault" "this" {
   purge_protection_enabled = false  # Allows manual deletion
 
   tags = var.default_tags
+}
+
+# Key vault permission
+resource "azurerm_role_assignment" "data_engineers_keyvault" {
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = data.azuread_group.data_engineers.object_id
 }

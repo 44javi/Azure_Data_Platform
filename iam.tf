@@ -12,25 +12,25 @@ resource "azuread_group" "External_Users" {
   description      = "Group for guests to have access to Azure resources"
 }
 
-# Assign Databricks Workspace permissions
-resource "azurerm_role_assignment" "data_engineers_workspace" {
-  scope                = var.workspace_id
-  role_definition_name = "Contributor"
-  principal_id         = azuread_group.data_engineers.object_id
+
+
+
+# For Azure Backend set up
+
+# Creates a Resource Group
+resource "azurerm_resource_group" "main" {
+  name     = "rg-${var.client}-${var.region}-${var.environment}"
+  location = var.region
 }
 
-# Assign Datalake permissions 
-resource "azurerm_role_assignment" "data_engineers_datalake" {
-  scope                = var.datalake_id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_group.data_engineers.object_id
+# for tags
+locals {
+  default_tags = {
+    owner       = var.owner
+    environment = var.environment
+    client      = var.client
+    region      = var.region
+    created_by  = "Terraform"
+  }
 }
-
-# Key vault permission
-resource "azurerm_role_assignment" "data_engineers_keyvault" {
-  scope                = azurerm_key_vault.this.id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = azuread_group.data_engineers.object_id
-}
-
 

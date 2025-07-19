@@ -4,6 +4,10 @@ resource "azurerm_resource_group" "main" {
   location = var.region
 }
 
+data "azuread_group" "data_engineers" {
+  display_name = "Data_Engineers"
+}
+
 data "azurerm_log_analytics_workspace" "main" {
   provider            = azurerm.monitoring
   name                = "log-management-prod"  

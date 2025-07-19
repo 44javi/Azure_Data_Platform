@@ -163,7 +163,7 @@ resource "azurerm_network_interface" "vm_nic" {
     name                          = "internal"
     subnet_id                     = var.public_subnet_id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.44.0.7"
+    private_ip_address            = var.vm_private_ip
     public_ip_address_id          = azurerm_public_ip.vm_public_ip.id
   }
   tags = var.default_tags
