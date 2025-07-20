@@ -3,6 +3,7 @@
 # For Azure Backend set up
 
 # Creates a Resource Group
+
 resource "azurerm_resource_group" "state" {
   name     = "rg-state-${var.environment}"
   location = var.region
@@ -27,6 +28,7 @@ resource "random_string" "this" {
   special = false
   upper   = false
 }
+
 
 data "azurerm_client_config" "current" {}
 
@@ -55,6 +57,8 @@ resource "azurerm_storage_account" "state" {
   public_network_access_enabled     = true # false blocks access to containers on the portal
 
 
+
+
   blob_properties {
     versioning_enabled            = true
     change_feed_enabled           = true
@@ -80,6 +84,7 @@ resource "azurerm_storage_container" "this" {
   storage_account_id    = azurerm_storage_account.state.id
   container_access_type = "private"
 }
+
 
 
 

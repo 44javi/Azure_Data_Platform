@@ -1,5 +1,6 @@
 
 
+
 # Creates a Resource Group
 resource "azurerm_resource_group" "main" {
   name     = "rg-${var.client}-${var.region}-${var.environment}"
@@ -56,7 +57,3 @@ locals {
     created_by  = "Terraform"
   }
 }
-
-
-
-
