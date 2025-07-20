@@ -3,9 +3,11 @@
 # For Azure Backend set up
 
 # Creates a Resource Group
-resource "azurerm_resource_group" "main" {
-  name     = "rg-${var.client}-${var.region}-${var.environment}"
+resource "azurerm_resource_group" "state" {
+  name     = "rg-state-${var.environment}"
   location = var.region
+
+  tags = local.default_tags
 }
 
 # for tags
@@ -26,9 +28,17 @@ resource "random_string" "this" {
   upper   = false
 }
 
+data "azurerm_client_config" "current" {}
+
+# Storage Blob Data Contributor - for state file operations
+resource "azurerm_role_assignment" "current_user_blob" {
+  scope                = azurerm_storage_account.state.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
 
 # Storage account for state
-resource "azurerm_storage_account" "this" {
+resource "azurerm_storage_account" "state" {
   name                = "ststate${random_string.this.result}"
   location            = var.region
   resource_group_name = azurerm_resource_group.main.name
@@ -42,7 +52,7 @@ resource "azurerm_storage_account" "this" {
   default_to_oauth_authentication   = true
   infrastructure_encryption_enabled = false
   allow_nested_items_to_be_public   = false
-  public_network_access_enabled     = true #false blocks access to containers on the portal
+  public_network_access_enabled     = true # false blocks access to containers on the portal
 
 
   blob_properties {
@@ -67,10 +77,9 @@ resource "azurerm_storage_account" "this" {
 # Create container in the storage account for state
 resource "azurerm_storage_container" "this" {
   name                  = "${var.region}-state-management"
-  storage_account_id    = azurerm_storage_account.this.id
+  storage_account_id    = azurerm_storage_account.state.id
   container_access_type = "private"
 }
-
 
 
 

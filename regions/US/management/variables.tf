@@ -35,6 +35,16 @@ variable "owner" {
   type = string
 }
 
+variable "project" {
+  description = "Main project associated with this deployment"
+  type        = string
+}
+
+variable "created_by" {
+  description = "Tag showing Terraform created this resource"
+  type        = string
+}
+
 variable "dbx_logs" {
   description = "List of Databricks log categories to enable"
   type        = list(string)

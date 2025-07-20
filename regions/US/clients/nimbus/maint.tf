@@ -106,7 +106,7 @@ module "compute" {
   subnet_id           = module.network.subnet_id
   public_subnet_id    = module.network.public_subnet_id
   default_tags        = local.default_tags
-  vm_private_ip = var.vm_private_ip
+  vm_private_ip       = var.vm_private_ip
 
   depends_on = [
     module.storage,
