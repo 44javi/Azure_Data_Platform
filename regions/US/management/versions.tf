@@ -1,5 +1,7 @@
 terraform {
-  backend "azurerm" {} #backend settings come from .debug.prod.sh
+
+  backend "azurerm" {} # backend settings come from .debug.prod.sh
+
 
   required_providers {
     azurerm = {
