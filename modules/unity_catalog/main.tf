@@ -60,7 +60,7 @@ resource "databricks_storage_credential" "unity" {
 # Catalog
 resource "databricks_catalog" "main" {
   provider      = databricks.workspace_resources
-  name          = "catalog-${var.client}-${var.environment}"
+  name          = "catalog_${var.client}_${var.environment}"
   comment       = "Catalog for client"
   storage_root = databricks_external_location.this["catalog"].url 
   
@@ -83,7 +83,7 @@ resource "databricks_external_location" "this" {
 # Schemas
 resource "databricks_schema" "schemas" {
   provider     = databricks.workspace_resources
-  for_each     = toset([for schema in var.schemas : "${schema}-schema"])
+  for_each     = toset([for schema in var.schemas : "${schema}_schema"])
   catalog_name = databricks_catalog.main.name
   name         = each.key
   comment      = "Schema for ${each.key} data"

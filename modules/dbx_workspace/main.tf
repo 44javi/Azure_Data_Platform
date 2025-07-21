@@ -6,7 +6,7 @@ data "azuread_group" "data_engineers" {
 
 # Azure Databricks Workspace with VNet injection
 resource "azurerm_databricks_workspace" "this" {
-  name                        = "dbx-workspace-${var.client}-${var.environment}"
+  name                        = "dbx-${var.region}-${var.environment}"
   resource_group_name         = var.resource_group_name
   location                    = var.region
   sku                         = "premium"                                 # Chose premium for job clusters and private endpoint, Role-Based Access Control (RBAC), Audit Logs, and Cluster Policies.

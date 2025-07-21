@@ -12,25 +12,3 @@ resource "azuread_group" "External_Users" {
   description      = "Group for guests to have access to Azure resources"
 }
 
-
-
-
-# For Azure Backend set up
-
-# Creates a Resource Group
-resource "azurerm_resource_group" "main" {
-  name     = "rg-${var.client}-${var.region}-${var.environment}"
-  location = var.region
-}
-
-# for tags
-locals {
-  default_tags = {
-    owner       = var.owner
-    environment = var.environment
-    client      = var.client
-    region      = var.region
-    created_by  = "Terraform"
-  }
-}
-

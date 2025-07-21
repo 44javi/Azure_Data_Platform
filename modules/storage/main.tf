@@ -7,8 +7,6 @@ data "azuread_group" "data_engineers" {
   display_name = "Data_Engineers"
 }
 
-
-
 # Random string for storage names
 resource "random_string" "this" {
   length  = 6
