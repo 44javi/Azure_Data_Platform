@@ -43,6 +43,16 @@ variable "owner" {
   type = string
 }
 
+variable "project" {
+  description = "Main project associated with this deployment"
+  type        = string
+}
+
+variable "created_by" {
+  description = "Tag showing Terraform created this resource"
+  type        = string
+}
+
 variable "monitoring_subscription_id" {
   description = "Subscription ID where Log Analytics workspace exists"
   type        = string

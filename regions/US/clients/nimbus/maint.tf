@@ -16,8 +16,8 @@ data "azurerm_log_analytics_workspace" "main" {
 
 data "azurerm_databricks_workspace" "this" {
   provider            = azurerm.management
-  name                = "dbx-workspace-management-prod"
-  resource_group_name = "rg-management--southcentralus-prod"
+  name                = "dbx-southcentralus-prod"
+  resource_group_name = "rg-management-prod"
 }
 
 
