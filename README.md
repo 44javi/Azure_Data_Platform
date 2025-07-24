@@ -140,10 +140,11 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 │               ├── variables.tf
 │               └── outputs.tf
 ├── .debug.prod.sh                # Sets the backend and some environment variables
-├── module_blocks.tf              # Core configuration to orchestrate modules
-├── provider.tf                   # Azure and Databricks providers
+├── iam.tf                        # Creates security groups
+├── main.tf                       # Core configuration to orchestrate modules
+├── versions.tf                   # Azure and Databricks providers
 ├── variables.tf                  # Variables for the project
-├── management_resources.tf       # For resources that apply to all modules
+├── management_groups.tf          # Sets management group hierarchy
 ├── outputs.tf                    # Root module outputs
 └── README.md                     # Project documentation
 └── template.tf                   # Templates for tfvars and debug.sh files

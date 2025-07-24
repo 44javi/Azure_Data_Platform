@@ -1,5 +1,24 @@
 # Module_blocks in root
 
+# Create a Resource Group
+resource "azurerm_resource_group" "main" {
+  name     = "rg-${var.client}-data-platform-${var.environment}"
+  location = var.region
+}
+
+
+# for tags
+locals {
+  default_tags = {
+    owner       = var.owner
+    environment = var.environment
+    project     = var.project
+    client      = var.client
+    region      = var.region
+    created_by  = "Terraform"
+  }
+}
+
 module "network" {
   source                  = "./modules/network"
   resource_group_name     = azurerm_resource_group.main.name
