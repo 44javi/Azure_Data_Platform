@@ -8,19 +8,19 @@ variable "countries" {
   default = ["USA", "Japan"]
 }
 # Create Management Groups
-resource "azurerm_management_group" "cyber nimbus" {
+resource "azurerm_management_group" "cyber_nimbus" {
   display_name                = "Cyber Nimbus"
   parent_management_group_id   = var.root_management_group_id
 }
 # Create Management Groups
 resource "azurerm_management_group" "Sandbox" {
   display_name                = "Sandbox"
-  parent_management_group_id   = azurerm_management_group.nkdhs.id
+  parent_management_group_id   = azurerm_management_group.cyber_nimbus.id
 }
 # Create Management Groups
 resource "azurerm_management_group" "Platform" {
   display_name                = "Platform"
-  parent_management_group_id   = azurerm_management_group.nkdhs.id
+  parent_management_group_id   = azurerm_management_group.cyber_nimbus.id
 }
 # Create Management Groups
 resource "azurerm_management_group" "Management" {
@@ -30,7 +30,7 @@ resource "azurerm_management_group" "Management" {
 # Create Management Groups
 resource "azurerm_management_group" "regions" {
   display_name                = "Regions"
-  parent_management_group_id   = azurerm_management_group.nkdhs.id
+  parent_management_group_id   = azurerm_management_group.cyber_nimbus.id
 }
 # Create Management Groups for each country
 resource "azurerm_management_group" "countries" {
