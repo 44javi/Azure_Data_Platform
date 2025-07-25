@@ -92,3 +92,8 @@ variable "username" {
   description = "Username for accounts"
   type        = string
 }
+
+variable "countries" {
+  description = "Sets the list of countries (Management Groups)"
+  type    = list(string)
+}

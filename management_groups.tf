@@ -1,12 +1,6 @@
 # Root module management_groups
 data "azurerm_client_config" "current" {}
 
-# Define the list of countries (Management Groups)
-variable "countries" {
-  type    = list(string)
-  default = ["USA", "Japan"]
-}
-
 # Create Management Groups
 resource "azurerm_management_group" "cyber_nimbus" {
   display_name                = "Cyber Nimbus"
