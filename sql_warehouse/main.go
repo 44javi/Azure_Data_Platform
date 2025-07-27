@@ -32,7 +32,7 @@ func main() {
 
     // Query to show schemas in the catalog
     query := `
-    SHOW SCHEMAS IN nimbus_dev_catalog;
+    SHOW SCHEMAS IN catalog_cyber_prod;
     `
 
     rows, err := db.QueryContext(context.Background(), query)
@@ -42,7 +42,7 @@ func main() {
     defer rows.Close()
 
     var schemaName sql.NullString
-    fmt.Println("Schemas in nimbus_dev_catalog:")
+    fmt.Println("Schemas in catalog_cyber_prod:")
 
     for rows.Next() {
         if err := rows.Scan(&schemaName); err != nil {

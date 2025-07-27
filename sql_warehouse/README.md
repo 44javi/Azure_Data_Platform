@@ -23,7 +23,7 @@ go get github.com/joho/godotenv
 ## Configuration
 Create a `.env` file in your project directory with the Databricks connection string:
 ``` ini
-DATABRICKS_DSN="token:<your-access-token>@<your-workspace>.azuredatabricks.net:443/sql/1.0/warehouses/<warehouse-id>
+DATABRICKS_DSN="token:<your-access-token>@<your-workspace>.azuredatabricks.net:443/sql/1.0/warehouses/<warehouse-id>"
 ```
 
 > **Note:** The connection string should be stored in Azure Key Vault

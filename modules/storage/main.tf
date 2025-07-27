@@ -78,11 +78,9 @@ resource "azurerm_monitor_diagnostic_setting" "adls" {
     }
   }
 
-  metric {
-    category = "Transaction"
-    enabled  = true
-
-  }
+   #enabled_metric {
+   # category = "Transaction"
+ # }
 }
 
 # Assign Datalake permissions 

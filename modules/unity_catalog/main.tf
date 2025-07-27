@@ -51,7 +51,7 @@ resource "azurerm_role_assignment" "unity_eventsubscription" {
 }
 
 resource "databricks_storage_credential" "unity" {
-  name = "unity_catalog_credential"
+  name = "dbx_${var.client}_unity_credential"
   azure_managed_identity {
     access_connector_id = azurerm_databricks_access_connector.unity.id
   }

@@ -66,11 +66,6 @@ variable "schemas" {
   type        = list(any)
 }
 
-variable "account_id" {
-  description = "Databricks account ID"
-  type        = string
-}
-
 variable "root_management_group_id" {
   description = "The ID of the Root Management Group"
   type        = string
