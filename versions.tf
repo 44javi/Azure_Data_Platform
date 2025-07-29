@@ -54,4 +54,3 @@ provider "databricks" {
   azure_tenant_id            = module.entra_id.tenant_id
   */
 }
-

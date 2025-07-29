@@ -18,5 +18,6 @@ output "datalake_endpoint" {
 output "datalake_connection" {
   description = "The primary connection string for the storage account"
   value       = azurerm_storage_account.adls.primary_connection_string
+  sensitive   = true
 }
 

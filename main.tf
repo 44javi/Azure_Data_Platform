@@ -148,4 +148,3 @@ module "compute" {
     module.unity_catalog
   ]
 }
-
