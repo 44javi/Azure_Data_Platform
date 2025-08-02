@@ -5,3 +5,8 @@ output "log_analytics_id" {
 output "log_analytics_name" {
   value = azurerm_log_analytics_workspace.this.name
 }
+
+output "log_location" {
+  description = "Location of the Log Analytics workspace"
+  value       = azurerm_log_analytics_workspace.this.location
+}

@@ -1,3 +1,5 @@
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_monitor_action_group" "alerts" {
   name                = "alerts-${var.client}-${var.environment}"
   resource_group_name = var.resource_group_name
@@ -21,4 +23,11 @@ resource "azurerm_log_analytics_workspace" "this" {
   internet_query_enabled     = true
 
   tags = var.default_tags
+}
+
+# Role assignment for current user
+resource "azurerm_role_assignment" "admin" {
+  scope                = azurerm_log_analytics_workspace.this.id
+  role_definition_name = "Log Analytics Reader"  
+  principal_id         = data.azurerm_client_config.current.object_id
 }

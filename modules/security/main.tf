@@ -27,3 +27,9 @@ resource "azurerm_role_assignment" "data_engineers_keyvault" {
   role_definition_name = "Key Vault Secrets User"
   principal_id         = data.azuread_group.data_engineers.object_id
 }
+
+resource "azurerm_role_assignment" "admin" {
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Administrator"
+  principal_id         = data.azurerm_client_config.current.object_id
+}

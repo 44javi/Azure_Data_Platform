@@ -10,8 +10,8 @@ data "azuread_group" "data_engineers" {
 
 data "azurerm_log_analytics_workspace" "main" {
   provider            = azurerm.monitoring
-  name                = "log-management-prod"
-  resource_group_name = "rg-management-prod"
+  name                = "log-platform-prod"
+  resource_group_name = "rg-platform-prod"
 }
 
 data "azurerm_databricks_workspace" "this" {
@@ -20,6 +20,34 @@ data "azurerm_databricks_workspace" "this" {
   resource_group_name = "rg-management-prod"
 }
 
+data "azurerm_virtual_network" "management" {
+  provider            = azurerm.management
+  name                = "vnet-management-prod"
+  resource_group_name = "rg-management-prod"
+}
+
+# Management to Client peering
+resource "azurerm_virtual_network_peering" "management_to_client" {
+  provider                     = azurerm.management
+  name                         = "peer-management-to-${var.client}"
+  resource_group_name          = "rg-management-prod"
+  virtual_network_name         = "vnet-management-prod"
+  remote_virtual_network_id    = module.network.vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  depends_on                   = [module.network]
+}
+
+# Client to Management peering  
+resource "azurerm_virtual_network_peering" "client_to_management" {
+  name                         = "peer-${var.client}-to-management"
+  resource_group_name          = azurerm_resource_group.main.name
+  virtual_network_name         = module.network.vnet_name
+  remote_virtual_network_id    = data.azurerm_virtual_network.management.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  depends_on                   = [module.network]
+}
 
 module "network" {
   source                  = "../../../../modules/network"
@@ -107,10 +135,14 @@ module "compute" {
   public_subnet_id    = module.network.public_subnet_id
   default_tags        = local.default_tags
   vm_private_ip       = var.vm_private_ip
+  key_vault_id        = module.security.key_vault_id
+  log_analytics_id    = data.azurerm_log_analytics_workspace.main.id
+  log_location        = data.azurerm_log_analytics_workspace.main.location 
 
   depends_on = [
     module.storage,
-    module.unity_catalog
+    module.unity_catalog,
+    module.security
   ]
 }
 

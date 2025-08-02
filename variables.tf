@@ -66,11 +66,6 @@ variable "schemas" {
   type        = list(any)
 }
 
-variable "root_management_group_id" {
-  description = "The ID of the Root Management Group"
-  type        = string
-}
-
 variable "dbx_logs" {
   description = "List of Databricks logs to enable"
   type        = list(string)
@@ -86,9 +81,4 @@ variable "adls_logs" {
 variable "username" {
   description = "Username for accounts"
   type        = string
-}
-
-variable "countries" {
-  description = "Sets the list of countries (Management Groups)"
-  type    = list(string)
 }

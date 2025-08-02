@@ -40,13 +40,25 @@ resource "local_file" "private_key" {
   file_permission = "0600"
 }
 
+# Place private key in azure key vault
+resource "azurerm_key_vault_secret" "ssh_private_key" {
+  name         = "${var.client}"
+  value        = local.ssh_private_key
+  key_vault_id = var.key_vault_id   
+}
+
 # Create the Virtual Machine
 resource "azurerm_linux_virtual_machine" "this" {
-  name                = "vm-${random_string.vm_name_suffix.result}"
+  name                = "vm-${var.client}-${var.environment}"
   resource_group_name = var.resource_group_name
   location            = var.region
   size                = "Standard_D4s_v3"
   admin_username      = var.username
+
+  identity {
+    type = "SystemAssigned"
+  }
+  
   network_interface_ids = [
     azurerm_network_interface.vm_nic.id,
   ]
@@ -169,3 +181,44 @@ resource "azurerm_network_interface" "vm_nic" {
   tags = var.default_tags
 }
 
+# Collects vm logs and sends them to the log workspace
+resource "azurerm_monitor_data_collection_rule" "syslog" {
+  name                = "dcr_${var.client}_${var.environment}"
+  resource_group_name = var.resource_group_name
+  location            = var.log_location
+  destinations {
+    log_analytics {
+      workspace_resource_id = var.log_analytics_id
+      name                  = "syslog-location"
+    }
+  }
+  data_sources {
+    syslog {
+      name           = "syslog_datasource_${var.client}"
+      facility_names = ["*"]
+      log_levels     = ["*"]
+      streams        = ["Microsoft-Syslog"]
+    }
+  }
+  data_flow {
+    streams      = ["Microsoft-Syslog"]
+    destinations = ["syslog-location"]
+  }
+  tags = var.default_tags
+}
+# Association and agent installation
+resource "azurerm_monitor_data_collection_rule_association" "vm_syslog_association" {
+  name                    = "dcr_syslog_${var.client}_${var.environment}"
+  target_resource_id      = azurerm_linux_virtual_machine.this.id
+  data_collection_rule_id = azurerm_monitor_data_collection_rule.syslog.id
+  description             = "Association between Linux VM and syslog data collection rule"
+}
+resource "azurerm_virtual_machine_extension" "azure_monitor_agent" {
+  name                       = "AzureMonitorLinuxAgent"
+  virtual_machine_id         = azurerm_linux_virtual_machine.this.id
+  publisher                  = "Microsoft.Azure.Monitor"
+  type                       = "AzureMonitorLinuxAgent"
+  type_handler_version       = "1.34"
+  auto_upgrade_minor_version = true
+  tags = var.default_tags
+}

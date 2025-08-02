@@ -57,3 +57,18 @@ variable "vm_private_ip" {
   description = "Static private IP address for the VM"
   type        = string
 }
+
+variable "key_vault_id" {
+  description = "ID of the Key Vault to store SSH keys"
+  type        = string
+}
+
+variable "log_analytics_id" {
+  description = "id of the main log workspace"
+  type = string
+}
+
+variable "log_location" {
+  description = "Location of the Log Analytics workspace for Data Collection Rule"
+  type        = string
+}
