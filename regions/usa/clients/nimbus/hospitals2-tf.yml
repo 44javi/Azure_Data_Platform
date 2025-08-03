@@ -1,0 +1,465 @@
+# Multi-stage Terraform Pipeline for Azure DevOps
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    include:
+      - terraform/
+      - hospitals2-tf.yml
+
+pr:
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    include:
+      - regions/us/clients/nimbus/
+      - modules/
+
+variables:
+  terraformVersion: '1.6.0'
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
+  client: 'hospitals2'
+
+stages:
+# PR Validation Stage
+- stage: PullRequestReview
+  condition: eq(variables['Build.Reason'], 'PullRequest')
+  displayName: 'Pull Request Review'
+  variables:
+  - group: terraform-dev  
+  jobs:
+  - job: PRValidation          
+    displayName: 'PR Validation Pipeline'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+      persistCredentials: true
+
+    - task: TerraformInstaller@0
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: $(terraformVersion)
+
+    # Set up Azure CLI authentication
+    - task: AzureCLI@2
+      displayName: 'Azure CLI Login'
+      inputs:
+        azureSubscription: 'management-service-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Logged into management subscription for backend access"
+
+    # Terraform Init with backend config
+    - task: Bash@3
+      displayName: 'Terraform Init'
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Set environment variables
+          export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+          export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+          export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+          export TF_VAR_client="$(client)"
+          export TF_VAR_environment="$(ENVIRONMENT)"
+          export BACKEND_KEY="${TF_VAR_client}-${TF_VAR_environment}"
+          
+          # Initialize Terraform with backend config
+          terraform init \
+            -backend-config="resource_group_name=$(BACKEND_RESOURCE_GROUP)" \
+            -backend-config="storage_account_name=$(BACKEND_STORAGE_ACCOUNT)" \
+            -backend-config="container_name=$(BACKEND_STORAGE_CONTAINER)" \
+            -backend-config="key=${BACKEND_KEY}" \
+            -backend-config="subscription_id=${TF_VAR_management_subscription_id}" \
+            -reconfigure
+        workingDirectory: $(workingDirectory)
+
+    - task: Bash@3
+      displayName: 'Terraform Validate'
+      inputs:
+        targetType: 'inline'
+        script: |
+          export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+          export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+          export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+          export TF_VAR_client="$(client)"
+          export TF_VAR_environment="$(ENVIRONMENT)"
+          
+          terraform validate
+        workingDirectory: $(workingDirectory)
+
+    # Switch to client subscription for plan
+    - task: AzureCLI@2
+      displayName: 'Switch to Client Subscription'
+      inputs:
+        azureSubscription: 'client-dev-service-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Switched to client subscription for terraform plan"
+
+    - task: Bash@3
+      displayName: 'Terraform Plan'
+      inputs:
+        targetType: 'inline'
+        script: |
+          export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+          export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+          export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+          export TF_VAR_client="$(client)"
+          export TF_VAR_environment="$(ENVIRONMENT)"
+          
+          terraform plan -out=tfplan -var-file="./env/$(ENVIRONMENT).tfvars"
+        workingDirectory: $(workingDirectory)
+
+    # Save plan as artifact
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Plan Artifact'
+      inputs:
+        targetPath: '$(workingDirectory)/tfplan'
+        artifact: 'terraform-plan-$(ENVIRONMENT)'
+        publishLocation: 'pipeline'
+
+    # Post plan to PR comment
+    - task: Bash@3
+      displayName: 'Post Plan to PR'
+      inputs:
+        targetType: 'inline'
+        script: |
+          export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+          export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+          export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+          export TF_VAR_client="$(client)"
+          export TF_VAR_environment="$(ENVIRONMENT)"
+          
+          PLAN_OUTPUT=$(terraform show -no-color tfplan)
+          
+          # Create comment via Azure DevOps REST API
+          cat << EOF > comment.json
+          {
+            "content": "## Terraform Plan Results for $(ENVIRONMENT)\n\n\`\`\`\n${PLAN_OUTPUT}\n\`\`\`\n\n📋 [Download full plan artifact]($(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=artifacts)",
+            "parentCommentId": 0,
+            "commentType": 1
+          }
+          EOF
+          
+          curl -X POST \
+            -H "Authorization: Bearer $(System.AccessToken)" \
+            -H "Content-Type: application/json" \
+            -d @comment.json \
+            "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_apis/git/repositories/$(Build.Repository.Name)/pullRequests/$(System.PullRequest.PullRequestId)/threads?api-version=6.0"
+        workingDirectory: $(workingDirectory)
+      condition: eq(variables['Build.Reason'], 'PullRequest')
+
+    # Cleanup
+    - task: Bash@3
+      displayName: 'Cleanup'
+      inputs:
+        targetType: 'inline'
+        script: |
+          rm -rf .terraform
+        workingDirectory: $(workingDirectory)
+      condition: always()
+
+# Development Environment
+- stage: DeployDev
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  displayName: 'Deploy to Development'
+  dependsOn: []
+  variables:
+  - group: terraform-dev
+  jobs:
+  - deployment: TerraformApplyDev
+    displayName: 'Apply to Dev'
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'development'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+
+          - task: TerraformInstaller@0
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: $(terraformVersion)
+
+          # Login to management subscription for backend
+          - task: AzureCLI@2
+            displayName: 'Azure CLI Login (Management)'
+            inputs:
+              azureSubscription: 'management-service-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Logged into management subscription for backend access"
+
+          - task: Bash@3
+            displayName: 'Terraform Init'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+                export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+                export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+                export TF_VAR_client="$(client)"
+                export TF_VAR_environment="$(ENVIRONMENT)"
+                export BACKEND_KEY="${TF_VAR_client}-${TF_VAR_environment}"
+                
+                terraform init \
+                  -backend-config="resource_group_name=$(BACKEND_RESOURCE_GROUP)" \
+                  -backend-config="storage_account_name=$(BACKEND_STORAGE_ACCOUNT)" \
+                  -backend-config="container_name=$(BACKEND_STORAGE_CONTAINER)" \
+                  -backend-config="key=${BACKEND_KEY}" \
+                  -backend-config="subscription_id=${TF_VAR_management_subscription_id}" \
+                  -reconfigure
+              workingDirectory: $(workingDirectory)
+
+          # Switch to client subscription for deployment
+          - task: AzureCLI@2
+            displayName: 'Switch to Client Subscription'
+            inputs:
+              azureSubscription: 'client-dev-service-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Switched to client subscription for terraform apply"
+
+          - task: Bash@3
+            displayName: 'Terraform Apply'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+                export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+                export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+                export TF_VAR_client="$(client)"
+                export TF_VAR_environment="$(ENVIRONMENT)"
+                
+                terraform apply -var-file="./env/$(ENVIRONMENT).tfvars" -auto-approve
+              workingDirectory: $(workingDirectory)
+
+          - task: Bash@3
+            displayName: 'Cleanup'
+            inputs:
+              targetType: 'inline'
+              script: |
+                rm -rf .terraform
+              workingDirectory: $(workingDirectory)
+            condition: always()
+
+# Test Environment
+- stage: DeployTest
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  displayName: 'Deploy to Test'
+  dependsOn: []
+  variables:
+  - group: terraform-test
+  jobs:
+  - deployment: TerraformApplyTest
+    displayName: 'Apply to Test'
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'test'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+
+          - task: TerraformInstaller@0
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: $(terraformVersion)
+
+          # Login to management subscription for backend
+          - task: AzureCLI@2
+            displayName: 'Azure CLI Login (Management)'
+            inputs:
+              azureSubscription: 'management-service-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Logged into management subscription for backend access"
+
+          - task: Bash@3
+            displayName: 'Terraform Init'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+                export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+                export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+                export TF_VAR_client="$(client)"
+                export TF_VAR_environment="$(ENVIRONMENT)"
+                export BACKEND_KEY="${TF_VAR_client}-${TF_VAR_environment}"
+                
+                terraform init \
+                  -backend-config="resource_group_name=$(BACKEND_RESOURCE_GROUP)" \
+                  -backend-config="storage_account_name=$(BACKEND_STORAGE_ACCOUNT)" \
+                  -backend-config="container_name=$(BACKEND_STORAGE_CONTAINER)" \
+                  -backend-config="key=${BACKEND_KEY}" \
+                  -backend-config="subscription_id=${TF_VAR_management_subscription_id}" \
+                  -reconfigure
+              workingDirectory: $(workingDirectory)
+
+          # Switch to client subscription for deployment
+          - task: AzureCLI@2
+            displayName: 'Switch to Client Subscription'
+            inputs:
+              azureSubscription: 'client-test-service-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Switched to client subscription for terraform operations"
+
+          - task: Bash@3
+            displayName: 'Terraform Plan'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+                export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+                export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+                export TF_VAR_client="$(client)"
+                export TF_VAR_environment="$(ENVIRONMENT)"
+                
+                terraform plan -var-file="./env/$(ENVIRONMENT).tfvars"
+              workingDirectory: $(workingDirectory)
+
+          - task: Bash@3
+            displayName: 'Terraform Apply'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+                export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+                export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+                export TF_VAR_client="$(client)"
+                export TF_VAR_environment="$(ENVIRONMENT)"
+                
+                terraform apply -var-file="./env/$(ENVIRONMENT).tfvars" -auto-approve
+              workingDirectory: $(workingDirectory)
+
+          - task: Bash@3
+            displayName: 'Cleanup'
+            inputs:
+              targetType: 'inline'
+              script: |
+                rm -rf .terraform
+              workingDirectory: $(workingDirectory)
+            condition: always()
+
+# Production Environment
+- stage: DeployProd
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  displayName: 'Deploy to Production'
+  dependsOn: DeployTest
+  variables:
+  - group: terraform-prod
+  jobs:
+  - deployment: TerraformApplyProd
+    displayName: 'Apply to Production'
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+
+          - task: TerraformInstaller@0
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: $(terraformVersion)
+
+          # Login to management subscription for backend
+          - task: AzureCLI@2
+            displayName: 'Azure CLI Login (Management)'
+            inputs:
+              azureSubscription: 'management-service-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Logged into management subscription for backend access"
+
+          - task: Bash@3
+            displayName: 'Terraform Init'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+                export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+                export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+                export TF_VAR_client="$(client)"
+                export TF_VAR_environment="$(ENVIRONMENT)"
+                export BACKEND_KEY="${TF_VAR_client}-${TF_VAR_environment}"
+                
+                terraform init \
+                  -backend-config="resource_group_name=$(BACKEND_RESOURCE_GROUP)" \
+                  -backend-config="storage_account_name=$(BACKEND_STORAGE_ACCOUNT)" \
+                  -backend-config="container_name=$(BACKEND_STORAGE_CONTAINER)" \
+                  -backend-config="key=${BACKEND_KEY}" \
+                  -backend-config="subscription_id=${TF_VAR_management_subscription_id}" \
+                  -reconfigure
+              workingDirectory: $(workingDirectory)
+
+          # Switch to client subscription for deployment
+          - task: AzureCLI@2
+            displayName: 'Switch to Client Subscription'
+            inputs:
+              azureSubscription: 'client-prod-service-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Switched to client subscription for terraform operations"
+
+          - task: Bash@3
+            displayName: 'Terraform Plan'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+                export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+                export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+                export TF_VAR_client="$(client)"
+                export TF_VAR_environment="$(ENVIRONMENT)"
+                
+                terraform plan -var-file="./env/$(ENVIRONMENT).tfvars"
+              workingDirectory: $(workingDirectory)
+
+          - task: ManualValidation@0
+            displayName: 'Manual Approval for Production'
+            inputs:
+              notifyUsers: 'admin@company.com,devops@company.com'
+              instructions: 'Please review the Terraform plan and approve deployment to production'
+
+          - task: Bash@3
+            displayName: 'Terraform Apply'
+            inputs:
+              targetType: 'inline'
+              script: |
+                export ARM_SUBSCRIPTION_ID="$(ARM_SUBSCRIPTION_ID)"
+                export TF_VAR_management_subscription_id="$(TF_VAR_management_subscription_id)"
+                export TF_VAR_monitoring_subscription_id="$(TF_VAR_monitoring_subscription_id)"
+                export TF_VAR_client="$(client)"
+                export TF_VAR_environment="$(ENVIRONMENT)"
+                
+                terraform apply -var-file="./env/$(ENVIRONMENT).tfvars" -auto-approve
+              workingDirectory: $(workingDirectory)
+
+          - task: Bash@3
+            displayName: 'Cleanup'
+            inputs:
+              targetType: 'inline'
+              script: |
+                rm -rf .terraform
+              workingDirectory: $(workingDirectory)
+            condition: always()
