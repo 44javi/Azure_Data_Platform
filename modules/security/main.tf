@@ -18,6 +18,10 @@ resource "azurerm_key_vault" "this" {
   soft_delete_retention_days = 30
   purge_protection_enabled = false  # Allows manual deletion
 
+  lifecycle {
+    ignore_changes = [tenant_id]
+  }
+
   tags = var.default_tags
 }
 
@@ -26,10 +30,18 @@ resource "azurerm_role_assignment" "data_engineers_keyvault" {
   scope                = azurerm_key_vault.this.id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = data.azuread_group.data_engineers.object_id
+
+  lifecycle {
+    ignore_changes = [principal_id]
+  }
 }
 
 resource "azurerm_role_assignment" "admin" {
   scope                = azurerm_key_vault.this.id
   role_definition_name = "Key Vault Administrator"
   principal_id         = data.azurerm_client_config.current.object_id
+
+  lifecycle {
+    ignore_changes = [principal_id]
+  }
 }

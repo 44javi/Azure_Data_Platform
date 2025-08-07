@@ -137,7 +137,7 @@ module "compute" {
   vm_private_ip       = var.vm_private_ip
   key_vault_id        = module.security.key_vault_id
   log_analytics_id    = data.azurerm_log_analytics_workspace.main.id
-  log_location        = data.azurerm_log_analytics_workspace.main.location 
+  log_location        = data.azurerm_log_analytics_workspace.main.location
 
   depends_on = [
     module.storage,
@@ -146,6 +146,20 @@ module "compute" {
   ]
 }
 
+# Optional for when an application outside of Azure needs permissions to the datalake
+module "service_principal" {
+  source              = "../../../../modules/service_principal"
+  client              = var.client
+  environment         = var.environment
+  resource_group_name = azurerm_resource_group.main.name
+  key_vault_id        = module.security.key_vault_id
+   datalake_id         = module.storage.datalake_id
+
+  depends_on = [
+    module.security,
+    module.storage
+  ]
+}
 
 # for tags
 locals {
