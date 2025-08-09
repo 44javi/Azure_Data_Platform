@@ -148,6 +148,7 @@ module "compute" {
 
 # Optional for when an application outside of Azure needs permissions to the datalake
 module "service_principal" {
+  count               = var.deploy_service_principal ? 1 : 0
   source              = "../../../../modules/service_principal"
   client              = var.client
   environment         = var.environment

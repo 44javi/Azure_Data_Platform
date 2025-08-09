@@ -78,3 +78,8 @@ variable "adls_logs" {
   type        = list(string)
   default     = []
 }
+
+variable "deploy_service_principal" {
+  description = "Whether to deploy the service principal module"
+  type        = bool
+}

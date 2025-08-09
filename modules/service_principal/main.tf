@@ -82,7 +82,7 @@ resource "azurerm_key_vault_certificate" "sp_cert" {
 resource "azuread_application_certificate" "sp_cert" {
   application_id    = azuread_application.this.id
   type           = "AsymmetricX509Cert"
-  encoding       = "hex" # Recommended for integrating with key vault 
+  encoding       = "hex" # Recommended when integrating with key vault 
   value          = azurerm_key_vault_certificate.sp_cert.certificate_data
   #end_date       = "2025-09-01T01:02:03Z"
 
