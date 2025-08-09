@@ -139,7 +139,10 @@ module "compute" {
   vnet_name           = module.network.vnet_name
   subnet_id           = module.network.subnet_id
   public_subnet_id    = module.network.public_subnet_id
-  vm_private_ip = var.vm_private_ip
+  vm_private_ip       = var.vm_private_ip
+  key_vault_id        = module.security.key_vault_id
+  log_analytics_id    = module.monitoring.log_analytics_id
+  log_location        = module.monitoring.log_location
   default_tags        = local.default_tags
 
   depends_on = [

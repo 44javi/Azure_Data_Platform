@@ -48,7 +48,7 @@ resource "azurerm_key_vault_certificate" "sp_cert" {
       }
 
       trigger {
-        lifetime_percentage = 80
+        lifetime_percentage = 10
       }
     }
 
@@ -57,14 +57,14 @@ resource "azurerm_key_vault_certificate" "sp_cert" {
     }
 
     x509_certificate_properties {
-      extended_key_usage = ["1.3.6.1.5.5.7.3.1", "1.3.6.1.5.5.7.3.2"]
+      extended_key_usage = ["1.3.6.1.5.5.7.3.2"] #"1.3.6.1.5.5.7.3.1",
 
       key_usage = [
-        "cRLSign",
-        "dataEncipherment",
-        "digitalSignature",
+        #"cRLSign",
+        #"dataEncipherment",
+        #"digitalSignature",
+        #"keyCertSign",
         "keyAgreement",
-        "keyCertSign",
         "keyEncipherment",
       ]
 
@@ -82,18 +82,15 @@ resource "azurerm_key_vault_certificate" "sp_cert" {
 resource "azuread_application_certificate" "sp_cert" {
   application_id    = azuread_application.this.id
   type           = "AsymmetricX509Cert"
-  encoding       = "hex"
+  encoding       = "hex" # Recommended for integrating with key vault 
   value          = azurerm_key_vault_certificate.sp_cert.certificate_data
-  end_date       = "2025-09-01T01:02:03Z"
+  #end_date       = "2025-09-01T01:02:03Z"
 
   lifecycle {
     create_before_destroy = true
     replace_triggered_by = [ azurerm_key_vault_certificate.sp_cert.certificate_data ]
   }
 }
-
-# Get the subscription ID for role assignment
-data "azurerm_subscription" "current" {}
 
 # Create role assignment for the service principal to access the datalake
 resource "azurerm_role_assignment" "sp_role" {
@@ -104,7 +101,7 @@ resource "azurerm_role_assignment" "sp_role" {
 
 # Grant the service principal Key Vault Secrets User role to read its own certificate
 resource "azurerm_role_assignment" "sp_cert_reader" {
-  scope                = var.key_vault_id
+  scope                = azurerm_key_vault_certificate.sp_cert.secret_id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = azuread_service_principal.this.object_id
 }
