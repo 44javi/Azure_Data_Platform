@@ -90,6 +90,7 @@ module "security" {
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
   default_tags        = local.default_tags
+  kv_rbac             = var.kv_rbac
 
   depends_on = [
     module.storage
@@ -154,7 +155,7 @@ module "service_principal" {
   environment         = var.environment
   resource_group_name = azurerm_resource_group.main.name
   key_vault_id        = module.security.key_vault_id
-   datalake_id         = module.storage.datalake_id
+  datalake_id         = module.storage.datalake_id
 
   depends_on = [
     module.security,

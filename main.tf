@@ -94,6 +94,7 @@ module "security" {
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
   default_tags        = local.default_tags
+  kv_rbac             = var.kv_rbac
 
   depends_on = [
     module.dbx_workspace,

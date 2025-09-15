@@ -83,3 +83,11 @@ variable "deploy_service_principal" {
   description = "Whether to deploy the service principal module"
   type        = bool
 }
+
+variable "kv_rbac" {
+  description = "Map of group based role assignments for Key Vault"
+  type = map(object({
+    group_name           = string
+    role_definition_name = string
+  }))
+}
