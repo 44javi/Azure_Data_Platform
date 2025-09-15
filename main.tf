@@ -57,6 +57,7 @@ module "storage" {
   default_tags        = local.default_tags
   log_analytics_id    = module.monitoring.log_analytics_id
   adls_logs           = var.adls_logs
+  adls_rbac           = var.adls_rbac
 
   depends_on = [
     module.network,
@@ -79,6 +80,7 @@ module "dbx_workspace" {
   nat_gateway_id          = module.network.nat_gateway_id
   log_analytics_id        = module.monitoring.log_analytics_id
   dbx_logs                = var.dbx_logs
+  dbx_rbac                = var.dbx_rbac
 
   depends_on = [
     module.network,

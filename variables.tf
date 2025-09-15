@@ -90,3 +90,19 @@ variable "kv_rbac" {
     role_definition_name = string
   }))
 }
+
+variable "adls_rbac" {
+  description = "Map of group based role assignments for ADLS"
+  type = map(object({
+    group_name           = string
+    role_definition_name = string
+  }))
+}
+
+variable "dbx_rbac" {
+  description = "Map of group based role assignments for dbx workspace"
+  type = map(object({
+    group_name           = string
+    role_definition_name = string
+  }))
+}

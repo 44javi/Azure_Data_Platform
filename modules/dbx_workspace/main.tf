@@ -1,7 +1,8 @@
 # /modules/databricks_workspace/main.tf
 
-data "azuread_group" "data_engineers" {
-  display_name = "Data_Engineers"
+data "azuread_group" "dbx_groups" {
+  for_each     = var.dbx_rbac
+  display_name = each.value.group_name
 }
 
 # Azure Databricks Workspace with VNet injection
@@ -134,8 +135,16 @@ resource "azurerm_monitor_diagnostic_setting" "dbx" {
 }
 
 # Assign Databricks Workspace permissions
-resource "azurerm_role_assignment" "data_engineers_workspace" {
+#resource "azurerm_role_assignment" "data_engineers_workspace" {
+#  scope                = azurerm_databricks_workspace.this.id
+#  role_definition_name = "Reader"
+#  principal_id         = data.azuread_group.data_engineers.object_id
+#}
+
+# Assign Datalake permissions 
+resource "azurerm_role_assignment" "dbx_group_permissions" {
+  for_each             = var.dbx_rbac
   scope                = azurerm_databricks_workspace.this.id
-  role_definition_name = "Reader"
-  principal_id         = data.azuread_group.data_engineers.object_id
+  role_definition_name = each.value.role_definition_name
+  principal_id         = data.azuread_group.dbx_groups[each.key].object_id
 }

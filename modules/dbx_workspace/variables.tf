@@ -66,3 +66,11 @@ variable "log_analytics_id" {
   description = "ID of the Log Analytics workspace"
   type        = string
 }
+
+variable "dbx_rbac" {
+  description = "Map of group based role assignments for dbx workspace"
+  type = map(object({
+    group_name           = string
+    role_definition_name = string
+  }))
+}

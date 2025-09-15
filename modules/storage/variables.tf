@@ -60,3 +60,11 @@ variable "containers" {
   description = "Storage containers for data lake"
   type        = list(any)
 }
+
+variable "adls_rbac" {
+  description = "Map of group based role assignments for ADLS"
+  type = map(object({
+    group_name           = string
+    role_definition_name = string
+  }))
+}

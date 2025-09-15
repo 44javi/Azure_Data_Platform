@@ -3,8 +3,9 @@
 # Get Azure subscription details
 data "azurerm_client_config" "current" {}
 
-data "azuread_group" "data_engineers" {
-  display_name = "Data_Engineers"
+data "azuread_group" "adls_groups" {
+  for_each     = var.adls_rbac
+  display_name = each.value.group_name
 }
 
 # Random string for storage names
@@ -78,14 +79,15 @@ resource "azurerm_monitor_diagnostic_setting" "adls" {
     }
   }
 
-   #enabled_metric {
-   # category = "Transaction"
- # }
+  #enabled_metric {
+  # category = "Transaction"
+  # }
 }
 
 # Assign Datalake permissions 
-resource "azurerm_role_assignment" "data_engineers_datalake" {
+resource "azurerm_role_assignment" "adls_group_permissions" {
+  for_each             = var.adls_rbac
   scope                = azurerm_storage_account.adls.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = data.azuread_group.data_engineers.object_id
+  role_definition_name = each.value.role_definition_name
+  principal_id         = data.azuread_group.adls_groups[each.key].object_id
 }
