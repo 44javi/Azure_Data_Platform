@@ -31,27 +31,28 @@ rm -rf .terraform
 
 #.tfvars
 
-#Root Management Group ID
-root_management_group_id = ""
+# =============================================================================
+# PROJECT & ENVIRONMENT CONFIGURATION
+# =============================================================================
+client      = ""
+environment = ""
+region      = ""
+owner       = ""
+project     = "Data Platform"
+created_by  = "Terraform"
 
-# Resource Naming
-client      = "nimbus"
-environment = "prod"
+# =============================================================================
+# NETWORK CONFIGURATION
+# =============================================================================
+vnet_address_space = [""]
 
-region             = "westus2"
-secondary_region   = "eastus2"
-
-alert_email = "j@protonmail.com"
-
-vnet_address_space = ["10.79.0.0/16"]
-
-# Map of addresses for each subnet
+# Subnet address mappings
 subnet_address_prefixes = {
-  public_subnet             = "10.79.0.0/26" # Public subnet for VMs
-  private_subnet            = "10.79.1.0/26" # Private subnet for VMs
-  bastion_subnet            = "10.79.2.0/26" # Subnet for Azure Bastion
-  databricks_public_subnet  = "10.79.3.0/24" # Public subnet for Databricks
-  databricks_private_subnet = "10.79.4.0/24" # Private subnet for Databricks
+  public_subnet             = ""   # Public subnet for VMs
+  private_subnet            = ""   # Private subnet for VMs
+  bastion_subnet            = ""   # Subnet for Azure Bastion
+  databricks_public_subnet  = ""   # Public subnet for Databricks
+  databricks_private_subnet = ""   # Private subnet for Databricks
 }
 
 # Access to public VMs
@@ -59,12 +60,26 @@ trusted_ip_ranges = [
   ""
 ]
 
-# VM Admin
+# =============================================================================
+# COMPUTE & VM CONFIGURATION
+# =============================================================================
 username = ""
+vm_private_ip = ""
 
-# Lists of Data lake container names and schemas for dbx
+# =============================================================================
+# DATA PLATFORM CONFIGURATION
+# =============================================================================
+
+# Lists of Data lake containers
 containers    = ["bronze", "silver", "gold", "catalog"]
+
+# Databricks Unity Catalog schemas
 schemas       = ["bronze", "silver", "gold"]
+
+# =============================================================================
+# MONITORING & LOGGING CONFIGURATION
+# =============================================================================
+alert_email = ""
 
 # List of Databricks log categories to enable
 dbx_logs = [
@@ -82,12 +97,42 @@ adls_logs =[
   "StorageWrite"
 ]
 
+# =============================================================================
+# RBAC & PERMISSIONS CONFIGURATION
+# =============================================================================
 
+# Key vault permissions
+kv_rbac = {
+  data_engineers = {
+    group_name           = "Data_Engineers"
+    role_definition_name = "Key Vault Secrets User"  
+  }
+  test_team = {
+    group_name           = "Test_Team"
+    role_definition_name = "Key Vault Secrets User"
+  }
+}
 
-# Default tags
-owner       = "Javier"
-project     = "Data Platform"
-created_by  = "Terraform"
+# Datalake (ADLS) permissions
+adls_rbac = {
+  data_engineers = {
+    group_name           = "Data_Engineers"
+    role_definition_name = "Storage Blob Data Contributor"
+  }
+
+#  external_users = {
+#    group_name           = "External_Users"
+#    role_definition_name = "Storage Blob Data Reader"
+#  }
+}
+
+# Databricks (dbx) workspace permissions (Control Plane)
+dbx_rbac = {
+   data_engineers = {
+    group_name           = "Data_Engineers"
+    role_definition_name = "Reader"
+  }
+}
 
 
 */
