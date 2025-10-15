@@ -76,6 +76,7 @@ module "storage" {
   default_tags        = local.default_tags
   log_analytics_id    = data.azurerm_log_analytics_workspace.main.id
   adls_logs           = var.adls_logs
+  adls_rbac           = var.adls_rbac
 
   depends_on = [
     module.network

@@ -132,6 +132,7 @@ module "compute" {
   providers = {
     azapi = azapi
   }
+  count               = var.deploy_compute ? 1 : 0
   client              = var.client
   environment         = var.environment
   region              = var.region

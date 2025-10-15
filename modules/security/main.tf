@@ -8,9 +8,16 @@ data "azuread_group" "kv_groups" {
   display_name = each.value.group_name
 }
 
+# Random string for storage names
+resource "random_string" "kv" {
+  length  = 4
+  special = false
+  upper   = false
+}
+
 # Creates a Key Vault 
 resource "azurerm_key_vault" "this" {
-  name                       = "kv${var.client}${var.environment}"
+  name                       = "kv-${var.client}-${var.environment}-${random_string.kv.result}"
   resource_group_name        = var.resource_group_name
   location                   = var.region
   tenant_id                  = data.azurerm_client_config.current.tenant_id

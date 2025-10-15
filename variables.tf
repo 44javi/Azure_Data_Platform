@@ -106,3 +106,8 @@ variable "dbx_rbac" {
     role_definition_name = string
   }))
 }
+
+variable "deploy_compute" {
+  description = "Whether to deploy the compute module"
+  type        = bool
+}

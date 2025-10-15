@@ -13,7 +13,7 @@ data "azuread_group" "data_engineers" {
 
 data "azurerm_log_analytics_workspace" "main" {
   provider            = azurerm.monitoring
-  name                = "log-management-prod"  
+  name                = "log-management-prod"
   resource_group_name = "rg-management-prod"
 }
 
@@ -45,6 +45,7 @@ module "dbx_workspace" {
   nat_gateway_id          = module.network.nat_gateway_id
   log_analytics_id        = data.azurerm_log_analytics_workspace.main.id
   dbx_logs                = var.dbx_logs
+  dbx_rbac                = var.dbx_rbac
 }
 
 # for tags
