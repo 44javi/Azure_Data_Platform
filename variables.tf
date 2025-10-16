@@ -111,3 +111,9 @@ variable "deploy_compute" {
   description = "Whether to deploy the compute module"
   type        = bool
 }
+
+variable "st_retention_days" {
+  description = "Number of days to retain deleted blobs and containers"
+  type        = number
+  default     = 30
+}

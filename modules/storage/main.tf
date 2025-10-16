@@ -34,7 +34,11 @@ resource "azurerm_storage_account" "adls" {
 
   blob_properties {
     delete_retention_policy {
-      days = 30
+      days = var.st_retention_days
+    }
+
+    container_delete_retention_policy {
+      days = var.st_retention_days
     }
   }
 

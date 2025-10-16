@@ -50,10 +50,10 @@ variable "log_analytics_id" {
   type        = string
 }
 
-variable "adls_logs"{
+variable "adls_logs" {
   description = "List of Data Lake logs to enable"
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "containers" {
@@ -67,4 +67,10 @@ variable "adls_rbac" {
     group_name           = string
     role_definition_name = string
   }))
+}
+
+variable "st_retention_days" {
+  description = "Number of days to retain deleted blobs and containers"
+  type        = number
+  default     = 30
 }
