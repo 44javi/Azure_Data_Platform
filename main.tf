@@ -129,9 +129,9 @@ module "unity_catalog" {
 
 module "compute" {
   source = "./modules/compute"
-  providers = {
-    azapi = azapi
-  }
+  # providers = {
+  #   azapi = azapi
+  # }
   count               = var.deploy_compute ? 1 : 0
   client              = var.client
   environment         = var.environment
@@ -152,6 +152,7 @@ module "compute" {
   depends_on = [
     module.storage,
     module.dbx_workspace,
-    module.unity_catalog
+    module.unity_catalog,
+    module.security
   ]
 }

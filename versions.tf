@@ -20,10 +20,6 @@ terraform {
       source  = "databricks/databricks"
       version = "~> 1.70.0"
     }
-    azapi ={
-      source = "azure/azapi"
-      version = "~> 2.3.0"
-    }
   }
 }
 
@@ -36,17 +32,13 @@ provider "azuread" {
   # configuration options
 }
 
-provider "azapi" {
-  # configuration options
-  }
-
 provider "databricks" {
   alias = "create_workspace"
 }
 
 provider "databricks" {
-  alias = "workspace_resources"
-  host  = module.dbx_workspace.workspace_url
+  alias                       = "workspace_resources"
+  host                        = module.dbx_workspace.workspace_url
   azure_workspace_resource_id = module.dbx_workspace.workspace_id
   /*
   azure_client_id            = module.entra_id.client_id
