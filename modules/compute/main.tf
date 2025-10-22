@@ -55,7 +55,7 @@ resource "azurerm_linux_virtual_machine" "this" {
   name                = "vm-${var.client}-${var.environment}"
   resource_group_name = var.resource_group_name
   location            = var.region
-  size                = "Standard_D4s_v3"
+  size                = "Standard_B1s" #"Standard_D4s_v3"
   admin_username      = var.username
 
   identity {

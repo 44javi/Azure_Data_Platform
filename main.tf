@@ -147,12 +147,38 @@ module "compute" {
   key_vault_id        = module.security.key_vault_id
   log_analytics_id    = module.monitoring.log_analytics_id
   log_location        = module.monitoring.log_location
-  default_tags        = local.default_tags
+
+  default_tags = merge(
+    local.default_tags,
+    {
+      "shutdown_patch"    = "false"
+      "shutdown_standard" = "true"
+    }
+  )
 
   depends_on = [
     module.storage,
     module.dbx_workspace,
     module.unity_catalog,
     module.security
+  ]
+}
+
+module "automation" {
+  source              = "./modules/automation"
+  client              = var.client
+  environment         = var.environment
+  region              = var.region
+  resource_group_name = azurerm_resource_group.main.name
+  resource_group_id   = azurerm_resource_group.main.id
+
+  default_tags = local.default_tags
+
+  depends_on = [
+    module.storage,
+    module.dbx_workspace,
+    module.unity_catalog,
+    module.security,
+    module.compute
   ]
 }
