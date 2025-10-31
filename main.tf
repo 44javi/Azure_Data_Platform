@@ -129,9 +129,6 @@ module "unity_catalog" {
 
 module "compute" {
   source = "./modules/compute"
-  # providers = {
-  #   azapi = azapi
-  # }
   count               = var.deploy_compute ? 1 : 0
   client              = var.client
   environment         = var.environment
@@ -151,8 +148,7 @@ module "compute" {
   default_tags = merge(
     local.default_tags,
     {
-      "shutdown_patch"    = "false"
-      "shutdown_standard" = "true"
+      "Environment" = "PROD"
     }
   )
 
@@ -166,6 +162,7 @@ module "compute" {
 
 module "automation" {
   source              = "./modules/automation"
+  count               = var.deploy_automation ? 1 : 0
   client              = var.client
   environment         = var.environment
   region              = var.region

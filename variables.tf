@@ -112,6 +112,36 @@ variable "deploy_compute" {
   type        = bool
 }
 
+variable "deploy_monitoring" {
+  description = "Whether to deploy the monitoring module"
+  type        = bool
+}
+
+variable "deploy_storage" {
+  description = "Whether to deploy the storage module"
+  type        = bool
+}
+
+variable "deploy_automation" {
+  description = "Whether to deploy the compute module"
+  type        = bool
+}
+
+variable "deploy_workspace" {
+  description = "Whether to deploy the workspace module"
+  type        = bool
+}
+
+variable "deploy_security" {
+  description = "Whether to deploy the security module"
+  type        = bool
+}
+
+variable "deploy_catalog" {
+  description = "Whether to deploy the catalog module"
+  type        = bool
+}
+
 variable "st_retention_days" {
   description = "Number of days to retain deleted blobs and containers"
   type        = number
