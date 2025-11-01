@@ -73,7 +73,7 @@ foreach ($env in $envs) {
         try {
             if ($action -eq "start") {
                 # Start if not running (covers stopped & deallocated)
-                if ($stateCode -ne "PowerState/running") {
+                if ($stateCode -notlike "*running*") {
                     Write-Output "[$env] Starting $name in $rg (state: $stateCode)"
                     Start-AzVM -Name $name -ResourceGroupName $rg -ErrorAction Stop -NoWait
                 } else {
@@ -81,8 +81,8 @@ foreach ($env in $envs) {
                 }
             } else {
                 # Stop only if running
-                if ($stateCode -eq "PowerState/running") {
-                    Write-Output "[$env] Stopping $name in $rg (state: running)"
+                if ($stateCode -like "*running*") {
+                    Write-Output "[$env] Stopping $name in $rg (state: $stateCode)"
                     Stop-AzVM -Name $name -ResourceGroupName $rg -Force -ErrorAction Stop -NoWait
                 } else {
                     Write-Output "[$env] Skip $name (state: $stateCode)"
