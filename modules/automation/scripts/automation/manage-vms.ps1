@@ -31,28 +31,23 @@ $vms = Get-AzVM -Status -ErrorAction Stop
 # Helper to get normalized power state
 function Get-PowerStateCode {
     param($vm)
-    $powerState = $vm.PowerState
     
-    # If PowerState property exists directly
-    if ($powerState) {
-        return "PowerState/$powerState"
-    }
-    
-    # Otherwise check Statuses collection
+    # Get the power state from Statuses collection
     $statusCode = ($vm.Statuses | Where-Object { $_.Code -like 'PowerState/*' } | Select-Object -First 1).Code
     
-    # If still nothing, try to get it another way
-    if (-not $statusCode) {
-        # Get fresh status for this specific VM
-        try {
-            $freshVm = Get-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Status
-            $statusCode = ($freshVm.Statuses | Where-Object { $_.Code -like 'PowerState/*' } | Select-Object -First 1).Code
-        } catch {
-            Write-Warning "Could not retrieve status for VM $($vm.Name)"
-        }
+    if ($statusCode) {
+        return $statusCode
     }
     
-    return $statusCode
+    # Fallback: try to get fresh status
+    try {
+        $freshVm = Get-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Status
+        $statusCode = ($freshVm.Statuses | Where-Object { $_.Code -like 'PowerState/*' } | Select-Object -First 1).Code
+        return $statusCode
+    } catch {
+        Write-Warning "Could not retrieve status for VM $($vm.Name)"
+        return $null
+    }
 }
 
 # Process each environment separately
