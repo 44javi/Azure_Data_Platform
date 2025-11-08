@@ -128,7 +128,7 @@ module "unity_catalog" {
 }
 
 module "compute" {
-  source = "./modules/compute"
+  source              = "./modules/compute"
   count               = var.deploy_compute ? 1 : 0
   client              = var.client
   environment         = var.environment
@@ -168,6 +168,7 @@ module "automation" {
   region              = var.region
   resource_group_name = azurerm_resource_group.main.name
   resource_group_id   = azurerm_resource_group.main.id
+  vm_schedules        = var.vm_schedules
 
   default_tags = local.default_tags
 

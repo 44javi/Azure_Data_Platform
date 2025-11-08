@@ -27,3 +27,16 @@ variable "default_tags" {
   description = "Default tags to apply to all resources"
   type        = map(string)
 }
+
+variable "vm_schedules" {
+  description = "VM start/stop schedules"
+  type = map(object({
+    frequency   = string
+    start_time  = string
+    week_days   = list(string)
+    description = string
+    vm_names    = string
+    action      = string
+  }))
+  default = {}
+}
