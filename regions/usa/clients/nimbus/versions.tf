@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.25.0"
+      version = "~> 4.37.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -20,7 +20,7 @@ terraform {
     }
     databricks = {
       source  = "databricks/databricks"
-      version = "~> 1.70.0"
+      version = "~> 1.87.0"
     }
   }
 }
@@ -42,10 +42,6 @@ provider "azurerm" {
   features {}
   subscription_id = var.management_subscription_id # Where Databricks workspace lives
 }
-
-provider "azapi" {
-  # configuration options
-  }
 
 provider "azuread" {
   # configuration options

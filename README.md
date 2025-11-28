@@ -1,6 +1,6 @@
 # Azure Data Platform 
 
-A repository for automating **Azure** and **Databricks** deployments with **Terraform**.
+A repository for automating **Azure** and **Databricks** deployments with **Terraform** for a MSP.
 
 ---
 

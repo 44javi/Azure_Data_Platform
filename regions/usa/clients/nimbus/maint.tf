@@ -122,9 +122,6 @@ module "unity_catalog" {
 
 module "compute" {
   source = "../../../../modules/compute"
-  providers = {
-    azapi = azapi
-  }
   client              = var.client
   environment         = var.environment
   region              = var.region
