@@ -1,4 +1,4 @@
-# Module_blocks in root
+# # Module_blocks in root
 
 # Create a Resource Group
 resource "azurerm_resource_group" "main" {
@@ -66,7 +66,10 @@ module "storage" {
 }
 
 module "dbx_workspace" {
-  source                  = "./modules/dbx_workspace"
+  source = "./modules/dbx_workspace"
+  providers = {
+    databricks.create_workspace = databricks.create_workspace
+  }
   client                  = var.client
   resource_group_name     = azurerm_resource_group.main.name
   region                  = var.region
@@ -83,26 +86,26 @@ module "dbx_workspace" {
   dbx_rbac                = var.dbx_rbac
 
   depends_on = [
-    module.network,
-    module.monitoring
+    module.network
+    #module.monitoring
   ]
 }
 
-module "security" {
-  source              = "./modules/security"
-  client              = var.client
-  environment         = var.environment
-  region              = var.region
-  resource_group_name = azurerm_resource_group.main.name
-  resource_group_id   = azurerm_resource_group.main.id
-  default_tags        = local.default_tags
-  kv_rbac             = var.kv_rbac
+# module "security" {
+#   source              = "./modules/security"
+#   client              = var.client
+#   environment         = var.environment
+#   region              = var.region
+#   resource_group_name = azurerm_resource_group.main.name
+#   resource_group_id   = azurerm_resource_group.main.id
+#   default_tags        = local.default_tags
+#   kv_rbac             = var.kv_rbac
 
-  depends_on = [
-    module.dbx_workspace,
-    module.storage
-  ]
-}
+#   depends_on = [
+#     module.dbx_workspace,
+#     module.storage
+#   ]
+# }
 
 module "unity_catalog" {
   source = "./modules/unity_catalog"
@@ -119,6 +122,7 @@ module "unity_catalog" {
   datalake_id         = module.storage.datalake_id
   containers          = var.containers
   schemas             = var.schemas
+  system_schemas      = var.system_schemas
   workspace_id        = module.dbx_workspace.workspace_id
 
   depends_on = [
@@ -127,56 +131,56 @@ module "unity_catalog" {
   ]
 }
 
-module "compute" {
-  source              = "./modules/compute"
-  count               = var.deploy_compute ? 1 : 0
-  client              = var.client
-  environment         = var.environment
-  region              = var.region
-  username            = var.username
-  resource_group_name = azurerm_resource_group.main.name
-  resource_group_id   = azurerm_resource_group.main.id
-  vnet_id             = module.network.vnet_id
-  vnet_name           = module.network.vnet_name
-  subnet_id           = module.network.subnet_id
-  public_subnet_id    = module.network.public_subnet_id
-  vm_private_ip       = var.vm_private_ip
-  key_vault_id        = module.security.key_vault_id
-  log_analytics_id    = module.monitoring.log_analytics_id
-  log_location        = module.monitoring.log_location
+# module "compute" {
+#   source              = "./modules/compute"
+#   count               = var.deploy_compute ? 1 : 0
+#   client              = var.client
+#   environment         = var.environment
+#   region              = var.region
+#   username            = var.username
+#   resource_group_name = azurerm_resource_group.main.name
+#   resource_group_id   = azurerm_resource_group.main.id
+#   vnet_id             = module.network.vnet_id
+#   vnet_name           = module.network.vnet_name
+#   subnet_id           = module.network.subnet_id
+#   public_subnet_id    = module.network.public_subnet_id
+#   vm_private_ip       = var.vm_private_ip
+#   key_vault_id        = module.security.key_vault_id
+#   log_analytics_id    = module.monitoring.log_analytics_id
+#   log_location        = module.monitoring.log_location
 
-  default_tags = merge(
-    local.default_tags,
-    {
-      "Environment" = "PROD"
-    }
-  )
+#   default_tags = merge(
+#     local.default_tags,
+#     {
+#       "Environment" = "PROD"
+#     }
+#   )
 
-  depends_on = [
-    module.storage,
-    module.dbx_workspace,
-    module.unity_catalog,
-    module.security
-  ]
-}
+#   depends_on = [
+#     module.storage,
+#     module.dbx_workspace,
+#     module.unity_catalog,
+#     module.security
+#   ]
+# }
 
-module "automation" {
-  source              = "./modules/automation"
-  count               = var.deploy_automation ? 1 : 0
-  client              = var.client
-  environment         = var.environment
-  region              = var.region
-  resource_group_name = azurerm_resource_group.main.name
-  resource_group_id   = azurerm_resource_group.main.id
-  vm_schedules        = var.vm_schedules
+# module "automation" {
+#   source              = "./modules/automation"
+#   count               = var.deploy_automation ? 1 : 0
+#   client              = var.client
+#   environment         = var.environment
+#   region              = var.region
+#   resource_group_name = azurerm_resource_group.main.name
+#   resource_group_id   = azurerm_resource_group.main.id
+#   vm_schedules        = var.vm_schedules
 
-  default_tags = local.default_tags
+#   default_tags = local.default_tags
 
-  depends_on = [
-    module.storage,
-    module.dbx_workspace,
-    module.unity_catalog,
-    module.security,
-    module.compute
-  ]
-}
+#   depends_on = [
+#     module.storage,
+#     module.dbx_workspace,
+#     module.unity_catalog,
+#     module.security,
+#     module.compute
+#   ]
+# }

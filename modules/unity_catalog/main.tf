@@ -88,3 +88,9 @@ resource "databricks_schema" "schemas" {
   name         = each.key
   comment      = "Schema for ${each.key} data"
 }
+
+resource "databricks_system_schema" "this" {
+  for_each = toset(var.system_schemas)
+  schema   = each.value
+}
+

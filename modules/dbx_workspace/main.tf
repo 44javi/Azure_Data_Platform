@@ -1,5 +1,19 @@
 # /modules/databricks_workspace/main.tf
 
+terraform {
+  required_providers {
+    databricks = {
+      source                = "databricks/databricks"
+      version               = "~> 1.87.0"
+      configuration_aliases = [databricks.create_workspace]
+    }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.37.0"
+    }
+  }
+}
+
 data "azuread_group" "dbx_groups" {
   for_each     = var.dbx_rbac
   display_name = each.value.group_name

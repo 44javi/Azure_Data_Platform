@@ -50,3 +50,8 @@ variable "schemas" {
   type        = list(any)
 }
 
+variable "system_schemas" {
+  description = "List of Databricks system schemas to enable"
+  type        = list(string)
+  default     = []
+}
