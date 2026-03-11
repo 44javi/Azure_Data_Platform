@@ -18,3 +18,10 @@ resource "azuread_group" "External_Users" {
   security_enabled = true
   description      = "Group for guests to have access to Azure resources"
 }
+
+# Create metastore admin
+resource "azuread_group" "metastore_admins" {
+  display_name     = "Metastore_Admins"
+  security_enabled = true
+  description      = "Group for users and principals to have access to the metastore"
+}

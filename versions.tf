@@ -20,6 +20,10 @@ terraform {
       source  = "databricks/databricks"
       version = "~> 1.87.0"
     }
+    dbtcloud = {
+      source  = "dbt-labs/dbtcloud"
+      version = "1.7.0"
+    }
   }
 }
 
@@ -45,4 +49,8 @@ provider "databricks" {
   azure_client_secret        = module.entra_id.client_secret
   azure_tenant_id            = module.entra_id.tenant_id
   */
+}
+
+provider "dbtcloud" {
+  # Configuration options
 }

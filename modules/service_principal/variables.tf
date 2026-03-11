@@ -28,3 +28,12 @@ variable "key_vault_id" {
   description = "ID of the Key Vault to store SSH keys"
   type        = string
 }
+
+variable "role_assignments" {
+  description = "Map of role assignments for the service principal"
+  type = map(object({
+    scope                = string
+    role_definition_name = string
+  }))
+  default = {}
+}

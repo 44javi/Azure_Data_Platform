@@ -92,16 +92,18 @@ resource "azuread_application_certificate" "sp_cert" {
   }
 }
 
-# Create role assignment for the service principal to access the datalake
-resource "azurerm_role_assignment" "sp_role" {
-  scope                = var.datalake_id
-  role_definition_name = "Storage Blob Data Contributor"
+# Create role assignments for the service principal
+resource "azurerm_role_assignment" "sp_roles" {
+  for_each = var.role_assignments
+
+  scope                = each.value.scope
+  role_definition_name = each.value.role_definition_name
   principal_id         = azuread_service_principal.this.object_id
 }
 
-# Grant the service principal Key Vault Secrets User role to read its own certificate
-resource "azurerm_role_assignment" "sp_cert_reader" {
-  scope                = azurerm_key_vault_certificate.sp_cert.secret_id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = azuread_service_principal.this.object_id
-}
+# # Grant the service principal Key Vault Secrets User role to read its own certificate
+# resource "azurerm_role_assignment" "sp_cert_reader" {
+#   scope                = azurerm_key_vault_certificate.sp_cert.secret_id
+#   role_definition_name = "Key Vault Secrets User"
+#   principal_id         = azuread_service_principal.this.object_id
+# }

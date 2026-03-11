@@ -91,21 +91,21 @@ module "dbx_workspace" {
   ]
 }
 
-# module "security" {
-#   source              = "./modules/security"
-#   client              = var.client
-#   environment         = var.environment
-#   region              = var.region
-#   resource_group_name = azurerm_resource_group.main.name
-#   resource_group_id   = azurerm_resource_group.main.id
-#   default_tags        = local.default_tags
-#   kv_rbac             = var.kv_rbac
+module "security" {
+  source              = "./modules/security"
+  client              = var.client
+  environment         = var.environment
+  region              = var.region
+  resource_group_name = azurerm_resource_group.main.name
+  resource_group_id   = azurerm_resource_group.main.id
+  default_tags        = local.default_tags
+  kv_rbac             = var.kv_rbac
 
-#   depends_on = [
-#     module.dbx_workspace,
-#     module.storage
-#   ]
-# }
+  depends_on = [
+    module.dbx_workspace,
+    module.storage
+  ]
+}
 
 module "unity_catalog" {
   source = "./modules/unity_catalog"
@@ -124,6 +124,7 @@ module "unity_catalog" {
   schemas             = var.schemas
   system_schemas      = var.system_schemas
   workspace_id        = module.dbx_workspace.workspace_id
+  sqlw_max_clusters   = var.sqlw_max_clusters
 
   depends_on = [
     module.storage,
@@ -184,3 +185,17 @@ module "unity_catalog" {
 #     module.compute
 #   ]
 # }
+
+module "service_principal" {
+  source              = "./modules/service_principal"
+  client              = var.client
+  environment         = var.environment
+  resource_group_name = azurerm_resource_group.main.name
+  key_vault_id        = module.security.key_vault_id
+  datalake_id         = module.storage.datalake_id
+
+  depends_on = [
+    module.security,
+    module.storage
+  ]
+}
