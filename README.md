@@ -48,14 +48,6 @@ A repository for automating **Azure** and **Databricks** deployments with **Terr
 
 ![Azure organization](assets/azure_org.png)
 
-### Azure data lake and Databricks
-
-![Azure resources](assets/azure_resources.png)
-
-### Databricks Architecture
-
-![Databricks Diagram](assets/databricks_workspace.png)
-
 > **Note:** The diagrams are a **high level overview** and don't capture the **all deployed resources**.
 
 ---
