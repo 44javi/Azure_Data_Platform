@@ -47,5 +47,7 @@ terraform.rc
 # Ignore SAST scans
 **checkov*
 
+.claude*
+
 
 
